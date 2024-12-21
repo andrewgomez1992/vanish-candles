@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
@@ -202,6 +202,10 @@ const Showcase = () => {
 
   // Use either location.state or fallback to dummyData
   const product = location.state || dummyData.find((item) => item.id === id);
+
+  useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to the top when the component is mounted
+  }, []);
 
   // If no product is found, show an error message
   if (!product) {
