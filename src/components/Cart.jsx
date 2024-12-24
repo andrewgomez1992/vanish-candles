@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { useCart } from "../context/CartContext";
 
 const CartPageWrapper = styled.div`
   padding: 150px 20px 20px;
@@ -127,7 +128,9 @@ const CheckoutButton = styled.button`
   }
 `;
 
-const Cart = ({ cart, removeFromCart, setCart }) => {
+const Cart = () => {
+  const { cart, removeFromCart, addToCart } = useCart();
+
   const calculateTotal = () => {
     try {
       return cart
@@ -143,14 +146,11 @@ const Cart = ({ cart, removeFromCart, setCart }) => {
     }
   };
 
-  const updateQuantity = (id, delta) => {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(item.quantity + delta, 1) }
-          : item
-      )
-    );
+  const updateQuantity = (id, newQuantity) => {
+    const item = cart.find((item) => item.id === id);
+    if (item) {
+      addToCart({ ...item, quantity: newQuantity - item.quantity });
+    }
   };
 
   return (
@@ -165,18 +165,24 @@ const Cart = ({ cart, removeFromCart, setCart }) => {
                   <span className="item-title">{item.title}</span>
                   <span className="item-price">{item.price}</span>
                   <div className="quantity-control">
-                    <button onClick={() => updateQuantity(item.id, -1)}>
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    >
                       -
                     </button>
                     <input
                       type="number"
                       value={item.quantity}
                       onChange={(e) => {
-                        const value = Math.max(parseInt(e.target.value, 10), 1);
-                        updateQuantity(item.id, value - item.quantity);
+                        const value = parseInt(e.target.value, 10);
+                        if (!isNaN(value)) {
+                          updateQuantity(item.id, value);
+                        }
                       }}
                     />
-                    <button onClick={() => updateQuantity(item.id, 1)}>
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    >
                       +
                     </button>
                   </div>

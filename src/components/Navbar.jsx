@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import vanishlogo from "../assets/vanishlogo.png";
+import { useCart } from "../context/CartContext";
 
 const NavbarContainer = styled.div`
   display: flex;
@@ -30,16 +32,16 @@ const CartContainer = styled.div`
     background-color: red;
     color: white;
     font-size: 0.8rem;
-    width: 18px; /* Ensures it is circular */
-    height: 18px; /* Ensures it is circular */
+    width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%; /* Makes it a perfect circle */
+    border-radius: 50%;
   }
 
   @media (max-width: 768px) {
-    order: 3; /* Ensure it's the last element on mobile */
+    order: 3;
   }
 `;
 
@@ -53,7 +55,7 @@ const BackgroundOverlay = styled.div`
   z-index: 899;
   pointer-events: none;
   transition: height 0.3s ease-in-out;
-  height: ${({ isScrolled }) => (isScrolled ? "50px" : "80px")};
+  height: ${({ $isScrolled }) => ($isScrolled ? "50px" : "80px")};
 
   @media (max-width: 768px) {
     display: none;
@@ -67,7 +69,7 @@ const TopNav = styled.div`
   padding: 0px 20px;
   position: fixed;
   width: 100%;
-  top: ${({ isScrolled }) => (isScrolled ? "-100px" : "0")};
+  top: ${({ $isScrolled }) => ($isScrolled ? "-100px" : "0")};
   height: 60px;
   background-color: black;
   overflow: hidden;
@@ -88,7 +90,7 @@ const BottomNav = styled.div`
   font-size: 0.7rem;
   text-transform: uppercase;
   position: fixed;
-  top: ${({ isScrolled }) => (isScrolled ? "0" : "60px")};
+  top: ${({ $isScrolled }) => ($isScrolled ? "0" : "60px")};
   width: 100%;
   background-color: black;
   transition: top 0.3s ease-in-out;
@@ -188,7 +190,7 @@ const NavIcons = styled.div`
 const MobileMenu = styled.div`
   position: fixed;
   top: 0;
-  left: ${({ isOpen }) => (isOpen ? "0" : "-100%")};
+  left: ${({ $isOpen }) => ($isOpen ? "0" : "-100%")};
   width: 80%;
   max-width: 300px;
   height: 100vh;
@@ -236,9 +238,10 @@ const MobileMenu = styled.div`
   }
 `;
 
-const Navbar = ({ cart }) => {
+const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { totalQuantity } = useCart();
   const navigate = useNavigate();
   const isAdmin = true; // Simulate admin login
   const isLoggedIn = true;
@@ -262,8 +265,8 @@ const Navbar = ({ cart }) => {
 
   return (
     <NavbarContainer>
-      <BackgroundOverlay isScrolled={isScrolled} />
-      <TopNav isScrolled={isScrolled}>
+      <BackgroundOverlay $isScrolled={isScrolled} />
+      <TopNav $isScrolled={isScrolled}>
         <Hamburger onClick={toggleMenu}>
           <div />
           <div />
@@ -278,10 +281,26 @@ const Navbar = ({ cart }) => {
           <span className="cart-icon" role="img" aria-label="Shopping Cart">
             🛒
           </span>
-          {cart?.length > 0 && <div className="cart-count">{cart?.length}</div>}
+          <AnimatePresence>
+            {totalQuantity > 0 && (
+              <motion.div
+                className="cart-count"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 10,
+                }}
+              >
+                {totalQuantity}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </CartContainer>
       </TopNav>
-      <BottomNav isScrolled={isScrolled}>
+      <BottomNav $isScrolled={isScrolled}>
         <div className="left-links">
           <a href="/">Shop</a>
           <a href="/contact">Contact</a>
@@ -300,7 +319,7 @@ const Navbar = ({ cart }) => {
           )}
         </div>
       </BottomNav>
-      <MobileMenu isOpen={isMenuOpen}>
+      <MobileMenu $isOpen={isMenuOpen}>
         <span className="close-button" onClick={toggleMenu}>
           ✕
         </span>

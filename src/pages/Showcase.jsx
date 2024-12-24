@@ -3,6 +3,7 @@ import { useParams, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import candleBackground from "../assets/candlebackground.webp";
+import { useCart } from "../context/CartContext";
 
 // Dummy product data
 const dummyData = [
@@ -197,9 +198,10 @@ const DetailsSection = styled.div`
   }
 `;
 
-const Showcase = ({ addToCart }) => {
+const Showcase = () => {
   const { id } = useParams();
   const location = useLocation();
+  const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
 
   // Use either location.state or fallback to dummyData
