@@ -69,17 +69,20 @@ const TopNav = styled.div`
   padding: 0px 20px;
   position: fixed;
   width: 100%;
-  top: ${({ $isScrolled }) => ($isScrolled ? "-100px" : "0")};
+  top: 0; /* Always stick to the top */
   height: 60px;
   background-color: black;
-  overflow: hidden;
-  transition: top 0.3s ease-in-out;
-  z-index: 900;
+  z-index: 1000; /* Ensure it's above other elements */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Add subtle shadow for better visibility */
 
   @media (max-width: 768px) {
     justify-content: space-between;
-    height: 80px;
+    height: 80px; /* Slightly larger height for mobile */
   }
+`;
+
+const PageWrapper = styled.div`
+  padding-top: 80px; /* Matches the navbar height to prevent overlap */
 `;
 
 const BottomNav = styled.div`
@@ -178,14 +181,15 @@ const MobileMenu = styled.div`
   width: 80%;
   max-width: 300px;
   height: 100vh;
-  background-color: white;
-  color: black;
+  background-color: #000; /* Dark background for contrast */
+  color: white;
   padding: 20px;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
+  overflow-y: auto; /* Enable scrolling if content overflows */
   transition: left 0.3s ease-in-out;
-  z-index: 1000;
+  z-index: 1001; /* Ensure it's above all other elements */
 
   .close-button {
     font-size: 1.5rem;
@@ -198,18 +202,18 @@ const MobileMenu = styled.div`
   .menu-items {
     display: flex;
     flex-direction: column;
-    gap: 0px;
-    margin-top: 10px;
+    gap: 15px;
+    margin-top: 20px;
   }
 
   a,
   .logout {
-    color: black;
+    color: white;
     text-decoration: none;
     font-size: 1.1rem;
     font-weight: 500;
-    padding: 15px 0;
-    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+    border-bottom: 1px solid #333;
     transition: color 0.3s ease;
 
     &:last-child {
@@ -217,7 +221,7 @@ const MobileMenu = styled.div`
     }
 
     &:hover {
-      color: gray;
+      color: #0378ff; /* Add hover effect for links */
     }
   }
 `;
@@ -277,7 +281,7 @@ const Navbar = () => {
   return (
     <NavbarContainer>
       <BackgroundOverlay $isScrolled={isScrolled} />
-      <TopNav $isScrolled={isScrolled}>
+      <TopNav>
         <Hamburger onClick={toggleMenu}>
           <div />
           <div />
@@ -292,23 +296,21 @@ const Navbar = () => {
           <span className="cart-icon" role="img" aria-label="Shopping Cart">
             🛒
           </span>
-          <AnimatePresence>
-            {totalQuantity > 0 && (
-              <motion.div
-                className="cart-count"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 10,
-                }}
-              >
-                {totalQuantity}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {totalQuantity > 0 && (
+            <motion.div
+              className="cart-count"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 200,
+                damping: 10,
+              }}
+            >
+              {totalQuantity}
+            </motion.div>
+          )}
         </CartContainer>
       </TopNav>
       <BottomNav $isScrolled={isScrolled}>
@@ -334,31 +336,34 @@ const Navbar = () => {
         <span className="close-button" onClick={toggleMenu}>
           ✕
         </span>
-        <Link
-          to="/"
-          onClick={(e) => {
-            e.preventDefault(); // Prevent default navigation behavior
-            handleShopClick(); // Redirect and scroll
-          }}
-        >
-          Shop
-        </Link>
-        <Link to="/contact" onClick={toggleMenu}>
-          Contact
-        </Link>
-        <Link to="/account" onClick={toggleMenu}>
-          Account
-        </Link>
-        {isAdmin && (
-          <Link className="admin-link" to="/dashboard" onClick={toggleMenu}>
-            Dashboard
+        <div className="menu-items">
+          <Link
+            to="/"
+            onClick={(e) => {
+              e.preventDefault();
+              handleShopClick();
+              toggleMenu();
+            }}
+          >
+            Shop
           </Link>
-        )}
-        {isLoggedIn && (
-          <span className="logout" onClick={() => handleLogout()}>
-            Log Out
-          </span>
-        )}
+          <Link to="/contact" onClick={toggleMenu}>
+            Contact
+          </Link>
+          <Link to="/account" onClick={toggleMenu}>
+            Account
+          </Link>
+          {isAdmin && (
+            <Link className="admin-link" to="/dashboard" onClick={toggleMenu}>
+              Dashboard
+            </Link>
+          )}
+          {isLoggedIn && (
+            <span className="logout" onClick={() => handleLogout()}>
+              Log Out
+            </span>
+          )}
+        </div>
       </MobileMenu>
     </NavbarContainer>
   );
