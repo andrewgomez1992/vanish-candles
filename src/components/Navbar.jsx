@@ -30,8 +30,12 @@ const CartContainer = styled.div`
     background-color: red;
     color: white;
     font-size: 0.8rem;
-    padding: 2px 6px;
-    border-radius: 50%;
+    width: 18px; /* Ensures it is circular */
+    height: 18px; /* Ensures it is circular */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* Makes it a perfect circle */
   }
 
   @media (max-width: 768px) {
