@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
@@ -43,6 +43,7 @@ const ProductPageWrapper = styled.div`
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: center;
+    padding-top: 30px;
   }
 `;
 
@@ -196,9 +197,10 @@ const DetailsSection = styled.div`
   }
 `;
 
-const Showcase = () => {
+const Showcase = ({ addToCart }) => {
   const { id } = useParams();
   const location = useLocation();
+  const [quantity, setQuantity] = useState(1);
 
   // Use either location.state or fallback to dummyData
   const product = location.state || dummyData.find((item) => item.id === id);
@@ -211,6 +213,19 @@ const Showcase = () => {
   if (!product) {
     return <PageWrapper>Product not found.</PageWrapper>;
   }
+
+  const handleAddToCart = () => {
+    addToCart({ ...product, quantity });
+  };
+
+  const handleQuantityChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+    if (isNaN(value) || value < 1) {
+      setQuantity(1);
+    } else {
+      setQuantity(value);
+    }
+  };
 
   return (
     <>
@@ -251,13 +266,25 @@ const Showcase = () => {
             <div className="quantity-wrapper">
               <span className="quantity-label">Quantity</span>
               <div className="quantity-control">
-                <button>-</button>
-                <input type="number" min="1" defaultValue="1" />
-                <button>+</button>
+                <button
+                  onClick={() => setQuantity((prev) => Math.max(prev - 1, 1))}
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                />
+                <button onClick={() => setQuantity((prev) => prev + 1)}>
+                  +
+                </button>
               </div>
             </div>
             <div className="action-buttons">
-              <button className="add-to-cart">Add to Cart</button>
+              <button className="add-to-cart" onClick={() => handleAddToCart()}>
+                Add to Cart
+              </button>
               <button className="buy-now">Buy it Now</button>
             </div>
             <div className="description">

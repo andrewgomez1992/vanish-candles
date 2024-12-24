@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import vanishlogo from "../assets/vanishlogo.png";
 
@@ -12,6 +12,33 @@ const NavbarContainer = styled.div`
   z-index: 1000;
 `;
 
+const CartContainer = styled.div`
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+
+  .cart-icon {
+    font-size: 1.5rem;
+    color: white;
+  }
+
+  .cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 50%;
+  }
+
+  @media (max-width: 768px) {
+    order: 3; /* Ensure it's the last element on mobile */
+  }
+`;
+
 const BackgroundOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -19,8 +46,8 @@ const BackgroundOverlay = styled.div`
   width: 100%;
   height: 160px;
   background-color: black;
-  z-index: 899; /* Below the TopNav but above content */
-  pointer-events: none; /* Ensures it doesn't interfere with clicks */
+  z-index: 899;
+  pointer-events: none;
   transition: height 0.3s ease-in-out;
   height: ${({ isScrolled }) => (isScrolled ? "50px" : "80px")};
 
@@ -39,20 +66,20 @@ const TopNav = styled.div`
   top: ${({ isScrolled }) => (isScrolled ? "-100px" : "0")};
   height: 60px;
   background-color: black;
-  overflow: hidden; /* Prevent any logo overflow */
+  overflow: hidden;
   transition: top 0.3s ease-in-out;
   z-index: 900;
 
   @media (max-width: 768px) {
     justify-content: space-between;
-    height: 80px; /* Adjust for smaller screens */
+    height: 80px;
   }
 `;
 
 const BottomNav = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Ensures vertical alignment of all elements */
+  align-items: center;
   padding: 15px 20px;
   font-size: 0.7rem;
   text-transform: uppercase;
@@ -71,18 +98,11 @@ const BottomNav = styled.div`
   .right-content {
     margin-left: auto;
     display: flex;
-    align-items: center; /* Ensures the cart icon aligns with text */
+    align-items: center;
     gap: 15px;
 
-    .cart-icon {
-      font-size: 1.5rem;
-      cursor: pointer;
-      line-height: normal; /* Prevents added height from line height */
-      padding: 0; /* Ensures no additional padding */
-      margin: 0; /* Removes margin in case of default styles */
-    }
-
-    a {
+    a,
+    .logout {
       color: white;
       text-decoration: none;
       font-weight: 500;
@@ -92,10 +112,15 @@ const BottomNav = styled.div`
         color: gray;
       }
     }
+
+    .admin-link {
+      color: yellow;
+      font-weight: bold;
+    }
   }
 
   @media (max-width: 768px) {
-    display: none; /* Hide the bottom nav on mobile */
+    display: none;
   }
 `;
 
@@ -126,16 +151,15 @@ const Logo = styled.div`
   top: 4px;
 
   img {
-    height: 160px; /* Adjusted to fit within TopNav */
+    height: 160px;
     display: block;
-    object-fit: contain; /* Ensures the logo scales properly */
+    object-fit: contain;
   }
 
   @media (max-width: 768px) {
-    height: 60px; /* Smaller logo for mobile */
+    height: 60px;
     margin: 0 auto;
     order: 2;
-    /* position: relative; */
     top: -50px !important;
     right: 0px;
   }
@@ -188,7 +212,8 @@ const MobileMenu = styled.div`
     margin-top: 10px;
   }
 
-  a {
+  a,
+  .logout {
     color: black;
     text-decoration: none;
     font-size: 1.1rem;
@@ -207,9 +232,12 @@ const MobileMenu = styled.div`
   }
 `;
 
-const Navbar = () => {
+const Navbar = ({ cart }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const isAdmin = true; // Simulate admin login
+  const isLoggedIn = true;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -224,64 +252,73 @@ const Navbar = () => {
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
+  const handleLogout = () => {
+    navigate("/");
+  };
+
   return (
     <NavbarContainer>
-      {/* Background Overlay */}
       <BackgroundOverlay isScrolled={isScrolled} />
-
       <TopNav isScrolled={isScrolled}>
-        {/* Hamburger Menu */}
         <Hamburger onClick={toggleMenu}>
           <div />
           <div />
           <div />
         </Hamburger>
-
-        {/* Logo */}
         <Logo>
           <Link to="/">
             <img src={vanishlogo} alt="Vanish Logo" />
           </Link>
         </Logo>
-
-        {/* Shopping Cart Icon */}
-        <NavIcons>
-          <span role="img" aria-label="Shopping Cart">
+        <CartContainer onClick={() => navigate("/cart")}>
+          <span className="cart-icon" role="img" aria-label="Shopping Cart">
             🛒
           </span>
-        </NavIcons>
+          {cart?.length > 0 && <div className="cart-count">{cart?.length}</div>}
+        </CartContainer>
       </TopNav>
-
       <BottomNav isScrolled={isScrolled}>
         <div className="left-links">
-          <a href="#collections">Shop</a>
-          <a href="#contact">Contact</a>
+          <a href="/">Shop</a>
+          <a href="/contact">Contact</a>
+          {isAdmin && (
+            <Link className="admin-link" to="/dashboard">
+              Dashboard
+            </Link>
+          )}
         </div>
         <div className="right-content">
-          {isScrolled ? (
-            <span className="cart-icon" role="img" aria-label="Shopping Cart">
-              🛒
+          <Link to={isLoggedIn ? "/account" : "/login"}>Account</Link>
+          {isLoggedIn && (
+            <span className="logout" onClick={handleLogout}>
+              Log Out
             </span>
-          ) : (
-            <Link to="/login">Account</Link>
           )}
         </div>
       </BottomNav>
-
-      {/* Mobile Menu */}
       <MobileMenu isOpen={isMenuOpen}>
         <span className="close-button" onClick={toggleMenu}>
           ✕
         </span>
-        <Link to="/shop" onClick={toggleMenu}>
+        <Link to="/" onClick={toggleMenu}>
           Shop
         </Link>
         <Link to="/contact" onClick={toggleMenu}>
           Contact
         </Link>
-        <Link to="/login" onClick={toggleMenu}>
+        <Link to="/account" onClick={toggleMenu}>
           Account
         </Link>
+        {isAdmin && (
+          <Link className="admin-link" to="/dashboard">
+            Dashboard
+          </Link>
+        )}
+        {isLoggedIn && (
+          <span className="logout" onClick={() => handleLogout()}>
+            Log Out
+          </span>
+        )}
       </MobileMenu>
     </NavbarContainer>
   );

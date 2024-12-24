@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import Navbar from "../components/Navbar"; // Import Navbar
-import Footer from "../components/Footer"; // Import Footer
+import Navbar from "../components/Navbar";
 
 const CreateAccountContainer = styled.div`
   display: flex;
@@ -139,7 +138,6 @@ const CreateAccount = () => {
             </form>
           </FormContainer>
         </CreateAccountContent>
-        <Footer />
       </CreateAccountContainer>
     </>
   );
