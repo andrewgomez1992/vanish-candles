@@ -316,7 +316,7 @@ const Navbar = () => {
       <BottomNav $isScrolled={isScrolled}>
         <div className="left-links">
           <button onClick={handleShopClick}>Shop</button>
-          <a href="/contact">Contact</a>
+          <Link to="/contact">Contact</Link>
           {isAdmin && (
             <Link className="admin-link" to="/dashboard">
               Dashboard
