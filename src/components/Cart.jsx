@@ -176,6 +176,27 @@ const Cart = () => {
     }
   };
 
+  const handleShopClick = () => {
+    if (window.location.pathname !== "/") {
+      navigate("/", { replace: false }); // Redirect to the landing page
+      setTimeout(() => {
+        scrollToShopSection();
+      }, 100); // Wait for the page to load before scrolling
+    } else {
+      scrollToShopSection(); // Scroll if already on the landing page
+    }
+  };
+
+  const scrollToShopSection = () => {
+    const shopSection = document.getElementById("shop-section");
+    if (shopSection) {
+      const yOffset = window.innerWidth > 768 ? -100 : -50; // Adjust offset for desktop and mobile
+      const yPosition =
+        shopSection.getBoundingClientRect().top + window.scrollY + yOffset;
+      window.scrollTo({ top: yPosition, behavior: "smooth" });
+    }
+  };
+
   return (
     <CartPageWrapper>
       <CartWrapper>
@@ -224,7 +245,7 @@ const Cart = () => {
         ) : (
           <>
             <EmptyCartMessage>Your cart is empty.</EmptyCartMessage>
-            <ShopButton onClick={() => navigate("/")}>Shop</ShopButton>
+            <ShopButton onClick={handleShopClick}>Shop</ShopButton>
           </>
         )}
       </CartWrapper>
