@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -352,9 +353,9 @@ const Addresses = () => {
             <AddButton onClick={addNewAddress}>Add a New Address</AddButton>
           </>
         )}
-        <a href="/account" style={{ display: "block", marginTop: "20px" }}>
+        <Link to="/account" style={{ display: "block", marginTop: "20px" }}>
           ← Return
-        </a>
+        </Link>
       </Container>
     </Wrapper>
   );
