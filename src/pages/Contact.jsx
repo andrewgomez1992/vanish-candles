@@ -6,7 +6,7 @@ const ContactWrapper = styled.div`
   background-color: #f9f9f9;
 
   @media (max-width: 768px) {
-    padding: 50px 20px;
+    padding: 20px 20px;
     margin-top: 80px;
   }
 `;
