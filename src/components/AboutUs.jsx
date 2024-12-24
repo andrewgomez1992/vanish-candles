@@ -1,7 +1,8 @@
 import React from "react";
 import styled from "styled-components";
+import { motion } from "framer-motion";
 
-const AboutUsWrapper = styled.section`
+const AboutUsWrapper = styled(motion.section)`
   position: relative;
   background-color: #f5f5f5;
   padding: 2rem;
@@ -45,7 +46,11 @@ const AboutUsWrapper = styled.section`
 
 const AboutUs = () => {
   return (
-    <AboutUsWrapper>
+    <AboutUsWrapper
+      initial={{ opacity: 0, y: 50 }} // Start invisible and slightly below
+      animate={{ opacity: 1, y: 0 }} // Animate to visible and its position
+      transition={{ duration: 1, ease: "easeOut" }} // Smooth animation
+    >
       <h2>What Makes Our Candles Special?</h2>
       <p>
         Welcome to Vanish Candles, where we create premium, chemical-free
@@ -54,7 +59,6 @@ const AboutUs = () => {
         Experience the warmth and calm of Vanish Candles—crafted to illuminate
         your moments.
       </p>
-      {/* <button>SHOP NOW</button> */}
     </AboutUsWrapper>
   );
 };

@@ -171,22 +171,6 @@ const Logo = styled.div`
   }
 `;
 
-const NavIcons = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
-
-  span {
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: white;
-  }
-
-  @media (max-width: 768px) {
-    order: 3;
-  }
-`;
-
 const MobileMenu = styled.div`
   position: fixed;
   top: 0;
@@ -260,7 +244,34 @@ const Navbar = () => {
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
   const handleLogout = () => {
-    navigate("/");
+    navigate("/"); // Redirect to the home page
+    if (isMenuOpen) {
+      toggleMenu(); // Close the menu if it's open
+    }
+  };
+  const handleShopClick = () => {
+    if (window.location.pathname !== "/") {
+      navigate("/", { replace: false }); // Redirect to the landing page
+      setTimeout(() => {
+        scrollToShopSection();
+      }, 100); // Wait for the page to load before scrolling
+    } else {
+      scrollToShopSection(); // Scroll if already on the landing page
+    }
+
+    if (isMenuOpen) {
+      toggleMenu(); // Close the menu if it's open
+    }
+  };
+
+  const scrollToShopSection = () => {
+    const shopSection = document.getElementById("shop-section");
+    if (shopSection) {
+      const yOffset = window.innerWidth > 768 ? -100 : -50; // Adjust offset for desktop and mobile
+      const yPosition =
+        shopSection.getBoundingClientRect().top + window.scrollY + yOffset;
+      window.scrollTo({ top: yPosition, behavior: "smooth" });
+    }
   };
 
   return (
@@ -302,7 +313,7 @@ const Navbar = () => {
       </TopNav>
       <BottomNav $isScrolled={isScrolled}>
         <div className="left-links">
-          <a href="/">Shop</a>
+          <button onClick={handleShopClick}>Shop</button>
           <a href="/contact">Contact</a>
           {isAdmin && (
             <Link className="admin-link" to="/dashboard">
@@ -323,7 +334,13 @@ const Navbar = () => {
         <span className="close-button" onClick={toggleMenu}>
           ✕
         </span>
-        <Link to="/" onClick={toggleMenu}>
+        <Link
+          to="/"
+          onClick={(e) => {
+            e.preventDefault(); // Prevent default navigation behavior
+            handleShopClick(); // Redirect and scroll
+          }}
+        >
           Shop
         </Link>
         <Link to="/contact" onClick={toggleMenu}>
@@ -333,7 +350,7 @@ const Navbar = () => {
           Account
         </Link>
         {isAdmin && (
-          <Link className="admin-link" to="/dashboard">
+          <Link className="admin-link" to="/dashboard" onClick={toggleMenu}>
             Dashboard
           </Link>
         )}

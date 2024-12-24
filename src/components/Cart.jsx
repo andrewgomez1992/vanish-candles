@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useCart } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 
 const CartPageWrapper = styled.div`
   padding: 150px 20px 20px;
@@ -128,7 +129,29 @@ const CheckoutButton = styled.button`
   }
 `;
 
+const ShopButton = styled.button`
+  display: block;
+  margin: 20px auto;
+  padding: 15px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+  background-color: #000000;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  width: 100%;
+  max-width: 200px;
+
+  &:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+`;
+
 const Cart = () => {
+  const navigate = useNavigate();
   const { cart, removeFromCart, addToCart } = useCart();
 
   const calculateTotal = () => {
@@ -199,7 +222,10 @@ const Cart = () => {
             <CheckoutButton>Proceed to Checkout</CheckoutButton>
           </>
         ) : (
-          <EmptyCartMessage>Your cart is empty.</EmptyCartMessage>
+          <>
+            <EmptyCartMessage>Your cart is empty.</EmptyCartMessage>
+            <ShopButton onClick={() => navigate("/")}>Shop</ShopButton>
+          </>
         )}
       </CartWrapper>
     </CartPageWrapper>
