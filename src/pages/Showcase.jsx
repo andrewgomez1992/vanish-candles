@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import candleBackground from "../assets/candlebackground.webp";
@@ -157,6 +158,8 @@ const DetailsSection = styled.div`
       font-size: 1rem;
       cursor: pointer;
       border-radius: 2px;
+      position: relative;
+      overflow: hidden;
     }
 
     .add-to-cart {
@@ -203,6 +206,7 @@ const Showcase = () => {
   const location = useLocation();
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
+  const [animateButton, setAnimateButton] = useState(false);
 
   // Use either location.state or fallback to dummyData
   const product = location.state || dummyData.find((item) => item.id === id);
@@ -218,6 +222,8 @@ const Showcase = () => {
 
   const handleAddToCart = () => {
     addToCart({ ...product, quantity });
+    setAnimateButton(true);
+    setTimeout(() => setAnimateButton(false), 300); // Reset animation state
   };
 
   const handleQuantityChange = (e) => {
@@ -284,9 +290,32 @@ const Showcase = () => {
               </div>
             </div>
             <div className="action-buttons">
-              <button className="add-to-cart" onClick={() => handleAddToCart()}>
+              <motion.button
+                className="add-to-cart"
+                onClick={() => handleAddToCart()}
+                animate={animateButton ? { scale: 1.1 } : { scale: 1 }}
+                transition={{ type: "spring", stiffness: 300, damping: 10 }}
+              >
                 Add to Cart
-              </button>
+                {animateButton && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    transition={{ duration: 0.3 }}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      background: "rgba(0, 0, 0, 0.1)",
+                      borderRadius: "inherit",
+                      zIndex: -1,
+                    }}
+                  />
+                )}
+              </motion.button>
               <button className="buy-now">Buy it Now</button>
             </div>
             <div className="description">

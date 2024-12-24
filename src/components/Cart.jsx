@@ -145,7 +145,7 @@ const ShopButton = styled.button`
   max-width: 200px;
 
   &:hover {
-    background-color: #0056b3;
+    /* background-color: #0056b3; */
     transform: scale(1.05);
   }
 `;
