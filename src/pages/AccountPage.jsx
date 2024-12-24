@@ -3,9 +3,13 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const AccountWrapper = styled.div`
-  padding: 150px 20px 20px; /* Top padding for visibility */
+  padding: 130px 20px 20px; /* Top padding for visibility */
   background-color: #f9f9f9;
   min-height: 100vh; /* Ensure full-page height */
+
+  @media (max-width: 768px) {
+    padding: 100px 20px 20px; /* Reduced top padding for mobile */
+  }
 `;
 
 const AccountSection = styled.div`
@@ -37,6 +41,15 @@ const AccountSection = styled.div`
 
     &:hover {
       text-decoration: underline;
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column; /* Stack cards vertically */
+    gap: 15px; /* Adjust spacing between cards for mobile */
+
+    .card {
+      max-width: 100%; /* Make cards full width on mobile */
     }
   }
 `;
