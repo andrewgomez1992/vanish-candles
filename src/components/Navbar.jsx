@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import vanishlogo from "../assets/vanishlogo.png";
 import { useCart } from "../context/CartContext";
+import { scrollToShopSection } from "../util/scrollToShopSection";
 
 const NavbarContainer = styled.div`
   display: flex;
@@ -83,10 +84,6 @@ const TopNav = styled.div`
     top: ${({ $isScrolled }) =>
       $isScrolled ? "-80px" : "0"}; /* Fully hides TopNav on mobile */
   }
-`;
-
-const PageWrapper = styled.div`
-  padding-top: 80px; /* Matches the navbar height to prevent overlap */
 `;
 
 const BottomNav = styled.div`
@@ -185,15 +182,23 @@ const MobileMenu = styled.div`
   width: 80%;
   max-width: 300px;
   height: 100vh;
-  background-color: #000; /* Dark background for contrast */
+  background-color: #000;
   color: white;
   padding: 20px;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  overflow-y: auto; /* Enable scrolling if content overflows */
+  overflow-y: auto;
   transition: left 0.3s ease-in-out;
-  z-index: 1001; /* Ensure it's above all other elements */
+  z-index: 1001;
+
+  button {
+    border-bottom: 1px solid #333;
+
+    &:hover {
+      color: #3a3a3a;
+    }
+  }
 
   .close-button {
     font-size: 1.5rem;
@@ -206,11 +211,10 @@ const MobileMenu = styled.div`
   .menu-items {
     display: flex;
     flex-direction: column;
-    gap: 0px;
+    gap: 15px;
     margin-top: 10px;
   }
 
-  a,
   .logout {
     color: white;
     text-decoration: none;
@@ -223,11 +227,18 @@ const MobileMenu = styled.div`
     &:last-child {
       border-bottom: none;
     }
-
-    &:hover {
-      color: #0378ff; /* Add hover effect for links */
-    }
   }
+`;
+
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: ${({ $isOpen }) => ($isOpen ? "block" : "none")};
 `;
 
 const Navbar = () => {
@@ -235,68 +246,43 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { totalQuantity } = useCart();
   const navigate = useNavigate();
-  const isAdmin = true; // Simulate admin login
+  const isAdmin = true;
   const isLoggedIn = true;
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
-
-  const handleLogout = () => {
-    navigate("/"); // Redirect to the home page
-    if (isMenuOpen) {
-      toggleMenu(); // Close the menu if it's open
-    }
-  };
-  const handleShopClick = () => {
-    if (window.location.pathname !== "/") {
-      navigate("/", { replace: false }); // Redirect to the landing page
-      setTimeout(() => {
+  const handleNavigation = (path, scrollToSection = false) => {
+    if (scrollToSection) {
+      if (window.location.pathname !== path) {
+        navigate(path);
+        setTimeout(() => scrollToShopSection(), 100);
+      } else {
         scrollToShopSection();
-      }, 100); // Wait for the page to load before scrolling
+      }
     } else {
-      scrollToShopSection(); // Scroll if already on the landing page
+      navigate(path);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
-
-    if (isMenuOpen) {
-      toggleMenu(); // Close the menu if it's open
-    }
-  };
-
-  const scrollToShopSection = () => {
-    const shopSection = document.getElementById("shop-section");
-    if (shopSection) {
-      const yOffset = window.innerWidth > 768 ? -100 : -50; // Adjust offset for desktop and mobile
-      const yPosition =
-        shopSection.getBoundingClientRect().top + window.scrollY + yOffset;
-      window.scrollTo({ top: yPosition, behavior: "smooth" });
-    }
+    setIsMenuOpen(false);
   };
 
   return (
     <NavbarContainer>
       <BackgroundOverlay $isScrolled={isScrolled} />
       <TopNav>
-        <Hamburger onClick={toggleMenu}>
+        <Hamburger onClick={() => setIsMenuOpen((prev) => !prev)}>
           <div />
           <div />
           <div />
         </Hamburger>
-        <Logo>
-          <Link to="/">
-            <img src={vanishlogo} alt="Vanish Logo" />
-          </Link>
+        <Logo onClick={() => handleNavigation("/")}>
+          <img src={vanishlogo} alt="Vanish Logo" />
         </Logo>
-        <CartContainer onClick={() => navigate("/cart")}>
+        <CartContainer onClick={() => handleNavigation("/cart")}>
           <span className="cart-icon" role="img" aria-label="Shopping Cart">
             🛒
           </span>
@@ -307,11 +293,7 @@ const Navbar = () => {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 10,
-                }}
+                transition={{ type: "spring", stiffness: 200, damping: 10 }}
               >
                 {totalQuantity}
               </motion.div>
@@ -321,53 +303,41 @@ const Navbar = () => {
       </TopNav>
       <BottomNav $isScrolled={isScrolled}>
         <div className="left-links">
-          <button onClick={handleShopClick}>Shop</button>
-          <Link to="/contact">Contact</Link>
+          <button onClick={() => handleNavigation("/", true)}>Shop</button>
+          <button onClick={() => handleNavigation("/contact")}>Contact</button>
           {isAdmin && (
-            <Link className="admin-link" to="/dashboard">
+            <button onClick={() => handleNavigation("/dashboard")}>
               Dashboard
-            </Link>
+            </button>
           )}
         </div>
         <div className="right-content">
-          <Link to={isLoggedIn ? "/account" : "/login"}>Account</Link>
+          <button
+            onClick={() => handleNavigation(isLoggedIn ? "/account" : "/login")}
+          >
+            Account
+          </button>
           {isLoggedIn && (
-            <span className="logout" onClick={handleLogout}>
-              Log Out
-            </span>
+            <button onClick={() => handleNavigation("/")}>Log Out</button>
           )}
         </div>
       </BottomNav>
+      <Overlay $isOpen={isMenuOpen} onClick={() => setIsMenuOpen(false)} />
       <MobileMenu $isOpen={isMenuOpen}>
-        <span className="close-button" onClick={toggleMenu}>
+        <span className="close-button" onClick={() => setIsMenuOpen(false)}>
           ✕
         </span>
         <div className="menu-items">
-          <Link
-            to="/"
-            onClick={(e) => {
-              e.preventDefault();
-              handleShopClick();
-              toggleMenu();
-            }}
-          >
-            Shop
-          </Link>
-          <Link to="/contact" onClick={toggleMenu}>
-            Contact
-          </Link>
-          <Link to="/account" onClick={toggleMenu}>
-            Account
-          </Link>
+          <button onClick={() => handleNavigation("/", true)}>Shop</button>
+          <button onClick={() => handleNavigation("/contact")}>Contact</button>
+          <button onClick={() => handleNavigation("/account")}>Account</button>
           {isAdmin && (
-            <Link className="admin-link" to="/dashboard" onClick={toggleMenu}>
+            <button onClick={() => handleNavigation("/dashboard")}>
               Dashboard
-            </Link>
+            </button>
           )}
           {isLoggedIn && (
-            <span className="logout" onClick={() => handleLogout()}>
-              Log Out
-            </span>
+            <button onClick={() => handleNavigation("/")}>Log Out</button>
           )}
         </div>
       </MobileMenu>

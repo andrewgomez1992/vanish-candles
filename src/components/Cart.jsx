@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
+import { scrollToShopSection } from "../util/scrollToShopSection";
 
 const CartPageWrapper = styled.div`
   padding: 150px 20px 20px;
@@ -145,7 +146,6 @@ const ShopButton = styled.button`
   max-width: 200px;
 
   &:hover {
-    /* background-color: #0056b3; */
     transform: scale(1.05);
   }
 `;
@@ -184,16 +184,6 @@ const Cart = () => {
       }, 100); // Wait for the page to load before scrolling
     } else {
       scrollToShopSection(); // Scroll if already on the landing page
-    }
-  };
-
-  const scrollToShopSection = () => {
-    const shopSection = document.getElementById("shop-section");
-    if (shopSection) {
-      const yOffset = window.innerWidth > 768 ? -100 : -50; // Adjust offset for desktop and mobile
-      const yPosition =
-        shopSection.getBoundingClientRect().top + window.scrollY + yOffset;
-      window.scrollTo({ top: yPosition, behavior: "smooth" });
     }
   };
 
