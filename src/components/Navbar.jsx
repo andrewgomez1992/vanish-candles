@@ -67,17 +67,21 @@ const TopNav = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0px 20px;
-  position: fixed;
+  position: absolute;
   width: 100%;
-  top: 0; /* Always stick to the top */
-  height: 60px;
+  top: ${({ $isScrolled }) => ($isScrolled ? "-100px" : "0")};
+  height: 80px; /* Matches full TopNav height, including the logo */
   background-color: black;
   z-index: 1000; /* Ensure it's above other elements */
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Add subtle shadow for better visibility */
+  transition: top 0.3s ease-in-out; /* Smooth transition */
 
   @media (max-width: 768px) {
+    position: fixed;
     justify-content: space-between;
-    height: 80px; /* Slightly larger height for mobile */
+    height: 80px; /* Matches mobile TopNav height */
+    top: ${({ $isScrolled }) =>
+      $isScrolled ? "-80px" : "0"}; /* Fully hides TopNav on mobile */
   }
 `;
 
@@ -93,7 +97,7 @@ const BottomNav = styled.div`
   font-size: 0.7rem;
   text-transform: uppercase;
   position: fixed;
-  top: ${({ $isScrolled }) => ($isScrolled ? "0" : "60px")};
+  top: ${({ $isScrolled }) => ($isScrolled ? "0" : "80px")};
   width: 100%;
   background-color: black;
   transition: top 0.3s ease-in-out;
@@ -202,8 +206,8 @@ const MobileMenu = styled.div`
   .menu-items {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
+    gap: 0px;
+    margin-top: 10px;
   }
 
   a,
@@ -296,21 +300,23 @@ const Navbar = () => {
           <span className="cart-icon" role="img" aria-label="Shopping Cart">
             🛒
           </span>
-          {totalQuantity > 0 && (
-            <motion.div
-              className="cart-count"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
-              transition={{
-                type: "spring",
-                stiffness: 200,
-                damping: 10,
-              }}
-            >
-              {totalQuantity}
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {totalQuantity > 0 && (
+              <motion.div
+                className="cart-count"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 10,
+                }}
+              >
+                {totalQuantity}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </CartContainer>
       </TopNav>
       <BottomNav $isScrolled={isScrolled}>
