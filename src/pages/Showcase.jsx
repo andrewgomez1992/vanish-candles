@@ -59,9 +59,14 @@ const ImageSection = styled.div`
     width: 100%;
     max-width: 500px;
     max-height: 400px;
-    object-fit: contain;
+    object-fit: cover;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    /* border-radius: 5px; */
+
+    @media (max-width: 768px) {
+      max-width: 360px; /* Reduced size for mobile */
+      max-height: 320px; /* Reduced size for mobile */
+    }
   }
 
   .thumbnails {
