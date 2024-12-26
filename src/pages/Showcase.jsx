@@ -37,7 +37,7 @@ const PageWrapper = styled.div`
 const ProductPageWrapper = styled.div`
   display: flex;
   padding-top: 100px;
-  gap: 2rem;
+  gap: 1rem;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
@@ -92,20 +92,20 @@ const DetailsSection = styled.div`
 
   h1 {
     font-size: 2rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     color: #333;
   }
 
   .price {
     font-size: 1.8rem;
     font-weight: bold;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.2rem;
     color: #000;
   }
 
   .shipping-info {
     font-size: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
     color: #666;
   }
 
