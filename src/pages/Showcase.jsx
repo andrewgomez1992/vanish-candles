@@ -44,7 +44,6 @@ const ProductPageWrapper = styled.div`
 
   @media (max-width: 768px) {
     flex-direction: column;
-    align-items: center;
     padding-top: 30px;
   }
 `;
@@ -91,20 +90,20 @@ const DetailsSection = styled.div`
   max-width: 600px;
 
   h1 {
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin-bottom: 0.5rem;
     color: #333;
   }
 
   .price {
-    font-size: 1.8rem;
+    font-size: 1.3rem;
     font-weight: bold;
     margin-bottom: 0.2rem;
     color: #000;
   }
 
   .shipping-info {
-    font-size: 1rem;
+    font-size: 0.8rem;
     margin-bottom: 1.2rem;
     color: #666;
   }
@@ -115,7 +114,7 @@ const DetailsSection = styled.div`
     margin-bottom: 1.5rem;
 
     .quantity-label {
-      margin-right: 1rem;
+      margin-right: 0.7rem;
       font-size: 1rem;
     }
 
@@ -129,7 +128,7 @@ const DetailsSection = styled.div`
       button {
         background: none;
         border: none;
-        padding: 0.5rem 1rem;
+        padding: 0.2rem 1rem;
         cursor: pointer;
         font-size: 1.2rem;
 
@@ -142,7 +141,7 @@ const DetailsSection = styled.div`
         width: 40px;
         text-align: center;
         border: none;
-        font-size: 1rem;
+        font-size: 0.9rem;
       }
     }
   }
@@ -153,9 +152,9 @@ const DetailsSection = styled.div`
     gap: 1rem;
 
     button {
-      padding: 1rem;
+      padding: 0.8rem;
       border: none;
-      font-size: 1rem;
+      font-size: 0.9rem;
       cursor: pointer;
       border-radius: 2px;
       position: relative;
@@ -186,14 +185,14 @@ const DetailsSection = styled.div`
     margin-top: 2rem;
 
     h2 {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       margin-bottom: 1rem;
       text-transform: uppercase;
       color: #333;
     }
 
     p {
-      font-size: 1rem;
+      font-size: 0.9rem;
       line-height: 1.8;
       color: #555;
       margin-bottom: 1rem;
