@@ -194,6 +194,8 @@ const MobileMenu = styled.div`
 
   button {
     border-bottom: 1px solid #333;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
 
     &:hover {
       color: #3a3a3a;
