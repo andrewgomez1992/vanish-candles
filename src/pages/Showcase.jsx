@@ -96,7 +96,6 @@ const DetailsSection = styled.div`
 
   h1 {
     font-size: 1.5rem;
-    margin-bottom: 0.5rem;
     color: #333;
   }
 
@@ -109,14 +108,14 @@ const DetailsSection = styled.div`
 
   .shipping-info {
     font-size: 0.8rem;
-    margin-bottom: 1.2rem;
+    margin-bottom: 0.5rem;
     color: #666;
   }
 
   .quantity-wrapper {
     display: flex;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
 
     .quantity-label {
       margin-right: 0.7rem;
