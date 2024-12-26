@@ -14,7 +14,7 @@ const DashboardContainer = styled.div`
 
 const DashboardWrapper = styled.div`
   background-color: #f5f5f5;
-  padding-top: 120px;
+  padding-top: 130px;
   min-height: 100vh;
 
   @media (max-width: 768px) {

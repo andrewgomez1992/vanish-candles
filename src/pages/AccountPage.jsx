@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const AccountWrapper = styled.div`
-  padding: 130px 20px 20px; /* Top padding for visibility */
+  padding: 150px 20px 20px; /* Top padding for visibility */
   background-color: #f9f9f9;
   min-height: 100vh; /* Ensure full-page height */
 
