@@ -5,6 +5,7 @@ import styled from "styled-components";
 import vanishlogo from "../assets/vanishlogo.png";
 import { useCart } from "../context/CartContext";
 import { scrollToShopSection } from "../util/scrollToShopSection";
+import { useAuth } from "../context/AuthContext";
 
 const NavbarContainer = styled.div`
   display: flex;
@@ -248,8 +249,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { totalQuantity } = useCart();
   const navigate = useNavigate();
-  const isAdmin = true;
-  const isLoggedIn = true;
+  const { isLoggedIn, isAdmin, logout } = useAuth(); // Destructure correctly
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -269,6 +269,12 @@ const Navbar = () => {
       navigate(path);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+    setIsMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/"); // Directly navigate after logout
     setIsMenuOpen(false);
   };
 
@@ -319,9 +325,7 @@ const Navbar = () => {
           >
             Account
           </button>
-          {isLoggedIn && (
-            <button onClick={() => handleNavigation("/")}>Log Out</button>
-          )}
+          {isLoggedIn && <button onClick={handleLogout}>Log Out</button>}
         </div>
       </BottomNav>
       <Overlay $isOpen={isMenuOpen} onClick={() => setIsMenuOpen(false)} />
@@ -332,15 +336,17 @@ const Navbar = () => {
         <div className="menu-items">
           <button onClick={() => handleNavigation("/", true)}>Shop</button>
           <button onClick={() => handleNavigation("/contact")}>Contact</button>
-          <button onClick={() => handleNavigation("/account")}>Account</button>
+          <button
+            onClick={() => handleNavigation(isLoggedIn ? "/account" : "/login")}
+          >
+            Account
+          </button>
           {isAdmin && (
             <button onClick={() => handleNavigation("/dashboard")}>
               Dashboard
             </button>
           )}
-          {isLoggedIn && (
-            <button onClick={() => handleNavigation("/")}>Log Out</button>
-          )}
+          {isLoggedIn && <button onClick={handleLogout}>Log Out</button>}
         </div>
       </MobileMenu>
     </NavbarContainer>

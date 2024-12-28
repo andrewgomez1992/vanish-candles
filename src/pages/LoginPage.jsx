@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../context/AuthContext";
 
 const LoginPageContainer = styled.div`
   display: flex;
@@ -9,6 +11,10 @@ const LoginPageContainer = styled.div`
   justify-content: space-between;
   min-height: 100vh;
   background-color: #f5f5f5; /* Light gray background */
+
+  @media (max-width: 768px) {
+    min-height: 80vh;
+  }
 `;
 
 const LoginContent = styled.div`
@@ -19,6 +25,11 @@ const LoginContent = styled.div`
   width: 100%;
   padding-top: 180px; /* Add padding to the entire login content */
   padding-bottom: 80px;
+
+  @media (max-width: 768px) {
+    /* padding-top: 0px; */
+    padding-bottom: 130px;
+  }
 `;
 
 const LoginFormContainer = styled.div`
@@ -78,6 +89,11 @@ const Button = styled.button`
   }
 `;
 
+const ErrorMessage = styled.div`
+  color: red;
+  margin-bottom: 20px;
+`;
+
 const LinksContainer = styled.div`
   margin-top: 20px;
   display: flex;
@@ -99,10 +115,36 @@ const LinksContainer = styled.div`
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { login } = useAuth(); // Destructure the login method from AuthContext
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Email:", email, "Password:", password);
+    setError(""); // Reset error message
+
+    try {
+      await login(email, password);
+      navigate("/account"); // Redirect to account page after successful login
+    } catch (err) {
+      console.error("Login failed:", err);
+
+      if (err.response) {
+        if (
+          err.response.status === 401 &&
+          err.response.data.message ===
+            "Please verify your email before logging in."
+        ) {
+          setError("Please verify your email before logging in.");
+        } else if (err.response.status === 401) {
+          setError("Invalid email or password.");
+        } else {
+          setError("An error occurred. Please try again.");
+        }
+      } else {
+        setError("An error occurred. Please try again.");
+      }
+    }
   };
 
   return (
@@ -112,18 +154,21 @@ const LoginPage = () => {
         <LoginContent>
           <LoginFormContainer>
             <Title>Login</Title>
+            {error && <ErrorMessage>{error}</ErrorMessage>}
             <form onSubmit={handleSubmit}>
               <Input
                 type="email"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
               />
               <Input
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
               />
               <Button type="submit">Sign In</Button>
             </form>
