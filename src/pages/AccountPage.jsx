@@ -1,6 +1,64 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
 
+// List of US States
+const usStates = [
+  "Alabama",
+  "Alaska",
+  "Arizona",
+  "Arkansas",
+  "California",
+  "Colorado",
+  "Connecticut",
+  "Delaware",
+  "Florida",
+  "Georgia",
+  "Hawaii",
+  "Idaho",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maine",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Minnesota",
+  "Mississippi",
+  "Missouri",
+  "Montana",
+  "Nebraska",
+  "Nevada",
+  "New Hampshire",
+  "New Jersey",
+  "New Mexico",
+  "New York",
+  "North Carolina",
+  "North Dakota",
+  "Ohio",
+  "Oklahoma",
+  "Oregon",
+  "Pennsylvania",
+  "Rhode Island",
+  "South Carolina",
+  "South Dakota",
+  "Tennessee",
+  "Texas",
+  "Utah",
+  "Vermont",
+  "Virginia",
+  "Washington",
+  "West Virginia",
+  "Wisconsin",
+  "Wyoming",
+];
+
+// Styled Components
 const AccountWrapper = styled.div`
   padding: 150px 20px 20px;
   background-color: #f9f9f9;
@@ -112,10 +170,16 @@ const AddAddressSection = styled.div`
     flex-direction: column;
     gap: 10px;
 
-    input {
+    input,
+    select {
       padding: 10px;
       font-size: 1rem;
       border: 1px solid #ddd;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 0.9rem;
     }
 
     .button-group {
@@ -185,82 +249,110 @@ const WarningMessage = styled.div`
   }
 `;
 
+// Validation Schema
+const addressSchema = Yup.object().shape({
+  first_name: Yup.string()
+    .matches(
+      /^[A-Za-z\s'-]+$/,
+      "First name must contain only letters, spaces, apostrophes, or hyphens"
+    )
+    .min(2, "First name must be at least 2 characters")
+    .required("First name is required"),
+  last_name: Yup.string()
+    .matches(
+      /^[A-Za-z\s'-]+$/,
+      "Last name must contain only letters, spaces, apostrophes, or hyphens"
+    )
+    .min(2, "Last name must be at least 2 characters")
+    .required("Last name is required"),
+  street: Yup.string()
+    .min(5, "Street address is too short")
+    .required("Street address is required"),
+  city: Yup.string()
+    .min(2, "City name is too short")
+    .required("City is required"),
+  state: Yup.string()
+    .oneOf(usStates, "Select a valid state")
+    .required("State is required"),
+  zip: Yup.string()
+    .matches(/^\d{5}(-\d{4})?$/, "ZIP code must be a valid US ZIP code")
+    .required("ZIP code is required"),
+  isDefault: Yup.boolean(),
+});
+
 const AccountPage = () => {
-  const [addresses, setAddresses] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      street: "2050 Esther Drive",
-      city: "Modesto",
-      state: "CA",
-      zip: "95350",
-      country: "United States",
-      isDefault: true,
-    },
-  ]);
+  const [addresses, setAddresses] = useState([]); // Start with empty list
   const [isAdding, setIsAdding] = useState(false);
-  const [currentAddress, setCurrentAddress] = useState({
-    id: null,
-    name: "",
-    street: "",
-    city: "",
-    state: "",
-    zip: "",
-    country: "",
-    isDefault: false,
-  });
+  const [editingAddressId, setEditingAddressId] = useState(null);
   const [warningMessage, setWarningMessage] = useState("");
 
-  const handleSave = (e) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(addressSchema),
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      street: "",
+      city: "",
+      state: "",
+      zip: "",
+      isDefault: false,
+    },
+  });
 
+  const onSubmit = (data) => {
+    // Check for duplicate addresses
     const exists = addresses.find(
       (addr) =>
-        addr.name === currentAddress.name &&
-        addr.street === currentAddress.street &&
-        addr.city === currentAddress.city &&
-        addr.state === currentAddress.state &&
-        addr.zip === currentAddress.zip &&
-        addr.country === currentAddress.country
+        addr.first_name.toLowerCase() === data.first_name.toLowerCase() &&
+        addr.last_name.toLowerCase() === data.last_name.toLowerCase() &&
+        addr.street.toLowerCase() === data.street.toLowerCase() &&
+        addr.city.toLowerCase() === data.city.toLowerCase() &&
+        addr.state.toLowerCase() === data.state.toLowerCase() &&
+        addr.zip === data.zip
     );
 
-    if (exists && currentAddress.id === null) {
+    if (exists && editingAddressId === null) {
       setWarningMessage("This address already exists.");
       return;
     }
 
-    if (currentAddress.isDefault) {
+    // If setting as default, unset other default addresses
+    if (data.isDefault) {
       setAddresses((prev) =>
         prev.map((addr) => ({ ...addr, isDefault: false }))
       );
     }
 
-    if (currentAddress.id !== null) {
+    if (editingAddressId !== null) {
+      // Editing an existing address
       setAddresses((prev) =>
         prev.map((addr) =>
-          addr.id === currentAddress.id ? { ...currentAddress } : addr
+          addr.id === editingAddressId ? { ...data, id: addr.id } : addr
         )
       );
+      setEditingAddressId(null);
     } else {
-      setAddresses((prev) => [...prev, { ...currentAddress, id: Date.now() }]);
+      // Adding a new address
+      setAddresses((prev) => [
+        ...prev,
+        { ...data, id: Date.now() }, // Using Date.now() for unique ID
+      ]);
     }
 
     setIsAdding(false);
-    setCurrentAddress({
-      id: null,
-      name: "",
-      street: "",
-      city: "",
-      state: "",
-      zip: "",
-      country: "",
-      isDefault: false,
-    });
+    reset();
   };
 
   const handleEdit = (address) => {
     setIsAdding(true);
-    setCurrentAddress({ ...address });
+    setEditingAddressId(address.id);
+    reset(address);
   };
 
   const handleDelete = (id) => {
@@ -303,15 +395,17 @@ const AccountPage = () => {
             {addresses.map((address) => (
               <AddressCard key={address.id}>
                 <div className="address-details">
-                  <p className="default">
-                    {address.isDefault ? "Default Address: " : ""}
-                    {address.name}
+                  {address.isDefault && (
+                    <p className="default">Default Address:</p>
+                  )}
+                  <p>
+                    {address.first_name} {address.last_name}
                   </p>
                   <p>{address.street}</p>
                   <p>
                     {address.city}, {address.state} {address.zip}
                   </p>
-                  <p>{address.country}</p>
+                  <p>United States</p>
                 </div>
                 <div className="actions">
                   <button onClick={() => handleEdit(address)}>Edit</button>
@@ -321,18 +415,29 @@ const AccountPage = () => {
                   >
                     Delete
                   </button>
-                  <button
-                    onClick={() => handleSetDefault(address.id)}
-                    className={address.isDefault ? "set-default" : ""}
-                  >
-                    {address.isDefault ? "Default" : "Set Default"}
-                  </button>
+                  {!address.isDefault && (
+                    <button
+                      onClick={() => handleSetDefault(address.id)}
+                      className="set-default"
+                    >
+                      Set Default
+                    </button>
+                  )}
+                  {address.isDefault && (
+                    <button className="set-default" disabled>
+                      Default
+                    </button>
+                  )}
                 </div>
               </AddressCard>
             ))}
           </AddressList>
           <button
-            onClick={() => setIsAdding(true)}
+            onClick={() => {
+              setIsAdding(true);
+              setEditingAddressId(null);
+              reset();
+            }}
             style={{
               marginTop: "10px",
               padding: "10px 15px",
@@ -349,64 +454,61 @@ const AccountPage = () => {
 
       {isAdding && (
         <AddAddressSection>
-          <form onSubmit={handleSave}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <input
               type="text"
-              placeholder="Full Name"
-              value={currentAddress.name}
-              onChange={(e) =>
-                setCurrentAddress({ ...currentAddress, name: e.target.value })
-              }
-              required
+              placeholder="First Name"
+              {...register("first_name")}
             />
+            {errors.first_name && (
+              <span className="error-message">{errors.first_name.message}</span>
+            )}
+
+            <input
+              type="text"
+              placeholder="Last Name"
+              {...register("last_name")}
+            />
+            {errors.last_name && (
+              <span className="error-message">{errors.last_name.message}</span>
+            )}
+
             <input
               type="text"
               placeholder="Street Address"
-              value={currentAddress.street}
-              onChange={(e) =>
-                setCurrentAddress({ ...currentAddress, street: e.target.value })
-              }
-              required
+              {...register("street")}
             />
-            <input
-              type="text"
-              placeholder="City"
-              value={currentAddress.city}
-              onChange={(e) =>
-                setCurrentAddress({ ...currentAddress, city: e.target.value })
-              }
-              required
-            />
-            <input
-              type="text"
-              placeholder="State"
-              value={currentAddress.state}
-              onChange={(e) =>
-                setCurrentAddress({ ...currentAddress, state: e.target.value })
-              }
-              required
-            />
-            <input
-              type="text"
-              placeholder="ZIP Code"
-              value={currentAddress.zip}
-              onChange={(e) =>
-                setCurrentAddress({ ...currentAddress, zip: e.target.value })
-              }
-              required
-            />
-            <input
-              type="text"
-              placeholder="Country"
-              value={currentAddress.country}
-              onChange={(e) =>
-                setCurrentAddress({
-                  ...currentAddress,
-                  country: e.target.value,
-                })
-              }
-              required
-            />
+            {errors.street && (
+              <span className="error-message">{errors.street.message}</span>
+            )}
+
+            <input type="text" placeholder="City" {...register("city")} />
+            {errors.city && (
+              <span className="error-message">{errors.city.message}</span>
+            )}
+
+            <select {...register("state")}>
+              <option value="">Select State</option>
+              {usStates.map((state) => (
+                <option key={state} value={state}>
+                  {state}
+                </option>
+              ))}
+            </select>
+            {errors.state && (
+              <span className="error-message">{errors.state.message}</span>
+            )}
+
+            <input type="text" placeholder="ZIP Code" {...register("zip")} />
+            {errors.zip && (
+              <span className="error-message">{errors.zip.message}</span>
+            )}
+
+            <label>
+              <input type="checkbox" {...register("isDefault")} /> Set as
+              default address
+            </label>
+
             <div className="button-group">
               <button type="submit" className="save">
                 Save
@@ -414,7 +516,11 @@ const AccountPage = () => {
               <button
                 type="button"
                 className="cancel"
-                onClick={() => setIsAdding(false)}
+                onClick={() => {
+                  setIsAdding(false);
+                  setEditingAddressId(null);
+                  reset();
+                }}
               >
                 Cancel
               </button>

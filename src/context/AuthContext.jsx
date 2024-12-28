@@ -1,9 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import axiosInstance from "../util/axiosConfig";
 
-const AuthContext = createContext();
-
-export const useAuth = () => useContext(AuthContext); // Named export
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -16,7 +14,7 @@ export const AuthProvider = ({ children }) => {
       setToken(storedToken);
       setIsLoggedIn(true);
       const decodedToken = parseJwt(storedToken);
-      if (decodedToken?.role === "Admin") {
+      if (decodedToken?.email?.role?.toLowerCase() === "admin") {
         setIsAdmin(true);
       }
     }
@@ -24,7 +22,9 @@ export const AuthProvider = ({ children }) => {
 
   const parseJwt = (token) => {
     try {
-      return JSON.parse(atob(token.split(".")[1]));
+      const decoded = JSON.parse(atob(token.split(".")[1]));
+      console.log("Decoded token:", decoded);
+      return decoded;
     } catch (e) {
       console.error("Failed to parse JWT:", e);
       return null;
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
       setToken(token);
       setIsLoggedIn(true);
       const decodedToken = parseJwt(token);
-      if (decodedToken?.role === "Admin") {
+      if (decodedToken?.email?.role?.toLowerCase() === "admin") {
         setIsAdmin(true);
       }
     } catch (error) {
