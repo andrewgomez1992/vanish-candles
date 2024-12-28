@@ -5,7 +5,7 @@ import styled from "styled-components";
 import vanishlogo from "../assets/vanishlogo.png";
 import { useCart } from "../context/CartContext";
 import { scrollToShopSection } from "../util/scrollToShopSection";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 
 const NavbarContainer = styled.div`
   display: flex;
