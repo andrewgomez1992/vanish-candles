@@ -13,6 +13,8 @@ import Cart from "./components/Cart";
 import Contact from "./pages/Contact";
 // import Addresses from "./pages/Addresses";
 import { CartProvider } from "./context/CartContext";
+import ProtectedRoute from "./routes/ProtecedRoute";
+import VerifyEmail from "./pages/VerifyEmail";
 
 const App = () => {
   return (
@@ -24,11 +26,19 @@ const App = () => {
           <Route path="/product/:id" element={<Showcase />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/create-account" element={<CreateAccount />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/account" element={<AccountPage />} />
           {/* <Route path="/account/addresses" element={<Addresses />} /> */}
           <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
         <Footer />
       </Router>

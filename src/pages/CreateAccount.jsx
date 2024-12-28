@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import axiosInstance from "../util/axiosConfig";
 
 const CreateAccountContainer = styled.div`
   display: flex;
@@ -8,7 +10,11 @@ const CreateAccountContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   min-height: 100vh;
-  background-color: #f5f5f5; /* Light gray background */
+  background-color: #f5f5f5;
+
+  @media (max-width: 768px) {
+    min-height: 80vh;
+  }
 `;
 
 const CreateAccountContent = styled.div`
@@ -17,21 +23,24 @@ const CreateAccountContent = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding-top: 180px; /* Match padding from LoginPage */
+  padding-top: 180px;
   padding-bottom: 80px;
+
+  @media (max-width: 768px) {
+    padding-bottom: 130px;
+  }
 `;
 
 const FormContainer = styled.div`
   background-color: white;
   width: 100%;
-  max-width: 600px; /* Increased width */
+  max-width: 600px;
   padding: 40px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
 
   @media (max-width: 768px) {
-    /* Tablet and smaller */
-    margin: 0 20px; /* Add padding around the form container */
+    margin: 0 20px;
   }
 `;
 
@@ -39,8 +48,8 @@ const Title = styled.h2`
   font-size: 1.8rem;
   font-weight: 500;
   margin-bottom: 20px;
-  color: #000; /* Black color for title */
-  text-transform: uppercase; /* Matches design */
+  color: #000;
+  text-transform: uppercase;
 `;
 
 const Input = styled.input`
@@ -52,11 +61,11 @@ const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #007bff; /* Blue focus color */
+    border-color: #007bff;
   }
 
   &::placeholder {
-    color: #aaa; /* Placeholder color */
+    color: #aaa;
   }
 `;
 
@@ -75,15 +84,28 @@ const Button = styled.button`
     background-color: gray;
     color: white;
   }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
+const ErrorMessage = styled.div`
+  color: red;
+  margin-bottom: 20px;
 `;
 
 const CreateAccount = () => {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -93,9 +115,54 @@ const CreateAccount = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data:", formData);
+    if (isSubmitting) return;
+    const { email, password, confirmPassword } = formData;
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    if (password.length < 8 || password.length > 30) {
+      setError("Password must be between 8 and 30 characters.");
+      return;
+    }
+
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await axiosInstance.put("/users/register", {
+        email,
+        password,
+      });
+
+      if (response.status === 201 || response.status === 200) {
+        setSuccessMessage(
+          "Account created! Please check your email to verify your account."
+        );
+      }
+    } catch (error) {
+      // Handle conflict (email already in use)
+      if (error.response?.status === 409) {
+        setError("Email already in use. Please login or use another email.");
+      } else {
+        const errorMessage =
+          error.response?.data?.message ||
+          error.message ||
+          "Failed to create account. Please try again.";
+        setError(errorMessage);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -105,37 +172,40 @@ const CreateAccount = () => {
         <CreateAccountContent>
           <FormContainer>
             <Title>Create Account</Title>
-            <form onSubmit={handleSubmit}>
-              <Input
-                type="text"
-                name="firstName"
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleChange}
-              />
-              <Input
-                type="text"
-                name="lastName"
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={handleChange}
-              />
-              <Input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-              <Input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              <Button type="submit">Create</Button>
-            </form>
+            {error && <ErrorMessage>{error}</ErrorMessage>}
+            {successMessage ? (
+              <p>{successMessage}</p>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+                <Input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <Input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Submitting..." : "Create Account"}
+                </Button>
+              </form>
+            )}
           </FormContainer>
         </CreateAccountContent>
       </CreateAccountContainer>
