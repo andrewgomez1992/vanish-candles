@@ -150,6 +150,8 @@ const ShopButton = styled.button`
   }
 `;
 
+// First commit from new mac
+
 const Cart = () => {
   const navigate = useNavigate();
   const { cart, removeFromCart, addToCart } = useCart();
