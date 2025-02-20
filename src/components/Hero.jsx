@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import candleBackground from "../assets/candlebackground.webp";
@@ -64,24 +64,6 @@ const ControlButton = styled.button`
 const Indicator = styled.span`
   color: white;
   font-size: 0.9rem;
-`;
-
-const ShopButton = styled.button`
-  background: black;
-  color: white;
-  padding: 10px 20px;
-  font-size: 1rem;
-  border: none;
-  cursor: pointer;
-  border-radius: 3px;
-  text-transform: uppercase;
-  font-weight: bold;
-  transition: background 0.3s;
-
-  &:hover {
-    background: gray;
-    color: black;
-  }
 `;
 
 const Hero = () => {

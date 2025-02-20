@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import  { createContext, useContext, useState, useEffect } from "react";
 
 const CartContext = createContext();
 
@@ -6,6 +6,7 @@ export const useCart = () => {
   return useContext(CartContext);
 };
 
+// eslint-disable-next-line react/prop-types
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [totalQuantity, setTotalQuantity] = useState(0);

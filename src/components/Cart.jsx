@@ -1,4 +1,4 @@
-import React from "react";
+import "react";
 import styled from "styled-components";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
