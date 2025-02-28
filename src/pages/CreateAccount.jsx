@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import axiosInstance from "../util/axiosConfig";
+import { useNavigate } from "react-router-dom";
 
 const CreateAccountContainer = styled.div`
   display: flex;
@@ -96,6 +96,18 @@ const ErrorMessage = styled.div`
   margin-bottom: 20px;
 `;
 
+const SuccessMessage = styled.p`
+  color: green;
+  margin-bottom: 20px;
+`;
+
+const ResendLink = styled.p`
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 10px;
+`;
+
 const CreateAccount = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -105,6 +117,7 @@ const CreateAccount = () => {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showResend, setShowResend] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -137,6 +150,7 @@ const CreateAccount = () => {
 
     setError("");
     setIsSubmitting(true);
+    setShowResend(false);
 
     try {
       const response = await axiosInstance.put("/users/register", {
@@ -150,15 +164,19 @@ const CreateAccount = () => {
         );
       }
     } catch (error) {
-      // Handle conflict (email already in use)
       if (error.response?.status === 409) {
-        setError("Email already in use. Please login or use another email.");
+        if (error.response?.data?.message?.includes("verify")) {
+          setError("Your email is already registered but not verified.");
+          setShowResend(true);
+        } else {
+          setError("Email already in use. Please login or use another email.");
+        }
       } else {
-        const errorMessage =
+        setError(
           error.response?.data?.message ||
-          error.message ||
-          "Failed to create account. Please try again.";
-        setError(errorMessage);
+            error.message ||
+            "Failed to create account. Please try again."
+        );
       }
     } finally {
       setIsSubmitting(false);
@@ -173,9 +191,15 @@ const CreateAccount = () => {
           <FormContainer>
             <Title>Create Account</Title>
             {error && <ErrorMessage>{error}</ErrorMessage>}
-            {successMessage ? (
-              <p>{successMessage}</p>
-            ) : (
+            {successMessage && (
+              <SuccessMessage>{successMessage}</SuccessMessage>
+            )}
+            {showResend && (
+              <ResendLink onClick={() => navigate("/resend-verification")}>
+                Click here to resend verification email
+              </ResendLink>
+            )}
+            {!successMessage && (
               <form onSubmit={handleSubmit}>
                 <Input
                   type="email"
