@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -281,7 +281,7 @@ const addressSchema = Yup.object().shape({
 });
 
 const AccountPage = () => {
-  const [addresses, setAddresses] = useState([]); // Start with empty list
+  const [addresses, setAddresses] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState(null);
   const [warningMessage, setWarningMessage] = useState("");
@@ -290,7 +290,7 @@ const AccountPage = () => {
     register,
     handleSubmit,
     reset,
-    watch,
+    // watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(addressSchema),
@@ -375,7 +375,7 @@ const AccountPage = () => {
       <AccountSection>
         <div className="card">
           <div className="header">Order History</div>
-          <p>You haven't placed any orders yet.</p>
+          <p>You haven&apos;t placed any orders yet.</p>
         </div>
         <div className="card">
           <div className="header">Addresses</div>

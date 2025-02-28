@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../hooks/useAuth";
+import axiosInstance from "../util/axiosConfig";
 
 const LoginPageContainer = styled.div`
   display: flex;
@@ -10,7 +11,7 @@ const LoginPageContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   min-height: 100vh;
-  background-color: #f5f5f5; /* Light gray background */
+  background-color: #f5f5f5;
 
   @media (max-width: 768px) {
     min-height: 80vh;
@@ -23,11 +24,10 @@ const LoginContent = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding-top: 180px; /* Add padding to the entire login content */
+  padding-top: 180px;
   padding-bottom: 80px;
 
   @media (max-width: 768px) {
-    /* padding-top: 0px; */
     padding-bottom: 130px;
   }
 `;
@@ -35,14 +35,13 @@ const LoginContent = styled.div`
 const LoginFormContainer = styled.div`
   background-color: white;
   width: 100%;
-  max-width: 600px; /* Increased width */
+  max-width: 600px;
   padding: 40px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
 
   @media (max-width: 768px) {
-    /* Tablet and smaller */
-    margin: 0 20px; /* Add padding around the form container */
+    margin: 0 20px;
   }
 `;
 
@@ -50,7 +49,8 @@ const Title = styled.h2`
   font-size: 1.8rem;
   font-weight: 500;
   margin-bottom: 20px;
-  color: #000; /* Black color for title */
+  color: #000;
+  text-transform: uppercase;
 `;
 
 const Input = styled.input`
@@ -58,16 +58,15 @@ const Input = styled.input`
   padding: 12px 0px;
   margin-bottom: 20px;
   border: 1px solid #ccc;
-  /* border-radius: 5px; */
   font-size: 14px;
 
   &:focus {
     outline: none;
-    border-color: #007bff; /* Blue focus color */
+    border-color: #007bff;
   }
 
   &::placeholder {
-    color: #aaa; /* Placeholder color */
+    color: #aaa;
   }
 `;
 
@@ -79,7 +78,6 @@ const Button = styled.button`
   font-size: 14px;
   font-weight: bold;
   border: none;
-  /* border-radius: 5px; */
   cursor: pointer;
   margin-top: 10px;
 
@@ -87,11 +85,29 @@ const Button = styled.button`
     background-color: gray;
     color: white;
   }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
 `;
 
 const ErrorMessage = styled.div`
   color: red;
   margin-bottom: 20px;
+`;
+
+const SuccessMessage = styled.p`
+  color: green;
+  margin-bottom: 20px;
+`;
+
+const ResendLink = styled.p`
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: -10px; /* Moves it up without affecting DOM flow */
+  margin-bottom: 10px;
 `;
 
 const LinksContainer = styled.div`
@@ -107,7 +123,7 @@ const LinksContainer = styled.div`
     transition: color 0.2s;
 
     &:hover {
-      color: #000; /* Darker on hover */
+      color: #000;
     }
   }
 `;
@@ -116,26 +132,30 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showResend, setShowResend] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuth(); // Destructure the login method from AuthContext
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Reset error message
+    setError("");
+    setShowResend(false);
+    setResendMessage("");
 
     try {
       await login(email, password);
-      navigate("/account"); // Redirect to account page after successful login
+      navigate("/account");
     } catch (err) {
       console.error("Login failed:", err);
 
       if (err.response) {
         if (
           err.response.status === 401 &&
-          err.response.data.message ===
-            "Please verify your email before logging in."
+          err.response.data.message?.includes("Your email is not verified")
         ) {
-          setError("Please verify your email before logging in.");
+          setError("Your email is not verified.");
+          setShowResend(true);
         } else if (err.response.status === 401) {
           setError("Invalid email or password.");
         } else {
@@ -147,6 +167,24 @@ const LoginPage = () => {
     }
   };
 
+  const handleResendVerification = async () => {
+    setResendMessage("");
+    try {
+      const response = await axiosInstance.post("/users/resend-verification", {
+        email,
+      });
+
+      if (response.status === 200) {
+        setResendMessage(
+          "A new verification email has been sent. Please check your inbox."
+        );
+      }
+      // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      setError("Failed to resend verification email. Please try again.");
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -155,6 +193,12 @@ const LoginPage = () => {
           <LoginFormContainer>
             <Title>Login</Title>
             {error && <ErrorMessage>{error}</ErrorMessage>}
+            {showResend && (
+              <ResendLink onClick={handleResendVerification}>
+                Click here to resend verification email
+              </ResendLink>
+            )}
+            {resendMessage && <SuccessMessage>{resendMessage}</SuccessMessage>}
             <form onSubmit={handleSubmit}>
               <Input
                 type="email"
