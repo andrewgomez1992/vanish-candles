@@ -1,9 +1,9 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import vanishlogo from "../assets/vanishlogo.png";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../context/useCart";
 import { scrollToShopSection } from "../util/scrollToShopSection";
 import { useAuth } from "../hooks/useAuth";
 
@@ -249,7 +249,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { totalQuantity } = useCart();
   const navigate = useNavigate();
-  const { isLoggedIn, isAdmin, logout } = useAuth(); // Destructure correctly
+  const { isLoggedIn, isAdmin, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);

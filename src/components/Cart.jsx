@@ -1,6 +1,6 @@
 import "react";
 import styled from "styled-components";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../context/useCart";
 import { useNavigate } from "react-router-dom";
 import { scrollToShopSection } from "../util/scrollToShopSection";
 
@@ -150,26 +150,9 @@ const ShopButton = styled.button`
   }
 `;
 
-// First commit from new mac
-
 const Cart = () => {
   const navigate = useNavigate();
-  const { cart, removeFromCart, addToCart } = useCart();
-
-  const calculateTotal = () => {
-    try {
-      return cart
-        .reduce((total, item) => {
-          const price = parseFloat(item.price.replace("$", "").trim());
-          if (isNaN(price)) throw new Error(`Invalid price: ${item.price}`);
-          return total + price * item.quantity;
-        }, 0)
-        .toFixed(2);
-    } catch (error) {
-      console.error("Error calculating total:", error);
-      return "0.00";
-    }
-  };
+  const { cart, totalPrice, removeFromCart, addToCart } = useCart();
 
   const updateQuantity = (id, newQuantity) => {
     const item = cart.find((item) => item.id === id);
@@ -180,12 +163,12 @@ const Cart = () => {
 
   const handleShopClick = () => {
     if (window.location.pathname !== "/") {
-      navigate("/", { replace: false }); // Redirect to the landing page
+      navigate("/", { replace: false });
       setTimeout(() => {
         scrollToShopSection();
-      }, 100); // Wait for the page to load before scrolling
+      }, 100);
     } else {
-      scrollToShopSection(); // Scroll if already on the landing page
+      scrollToShopSection();
     }
   };
 
@@ -231,8 +214,11 @@ const Cart = () => {
                 </span>
               </CartItem>
             ))}
-            <CartTotal>Total: ${calculateTotal()}</CartTotal>
-            <CheckoutButton>Proceed to Checkout</CheckoutButton>
+            <CartTotal>Total: ${totalPrice}</CartTotal>
+
+            <CheckoutButton onClick={() => navigate("/checkout")}>
+              Proceed to Checkout
+            </CheckoutButton>
           </>
         ) : (
           <>

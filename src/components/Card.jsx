@@ -1,4 +1,5 @@
 import "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import candleBackground from "../assets/candlebackground.webp";
@@ -59,6 +60,14 @@ const Card = ({ product }) => {
       <Price>{product.price}</Price>
     </CardWrapper>
   );
+};
+
+Card.propTypes = {
+  product: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  }).isRequired,
 };
 
 export default Card;

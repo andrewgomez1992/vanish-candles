@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
+import { useAuth } from "../hooks/useAuth";
+import axios from "axios";
+
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 // List of US States
 const usStates = [
@@ -58,7 +62,6 @@ const usStates = [
   "Wyoming",
 ];
 
-// Styled Components
 const AccountWrapper = styled.div`
   padding: 150px 20px 20px;
   background-color: #f9f9f9;
@@ -249,6 +252,34 @@ const WarningMessage = styled.div`
   }
 `;
 
+const OrderList = styled.div`
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
+
+const OrderCard = styled.div`
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  .order-id {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  .total {
+    color: #222;
+    font-size: 1rem;
+  }
+  .status {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: green;
+  }
+`;
+
 // Validation Schema
 const addressSchema = Yup.object().shape({
   first_name: Yup.string()
@@ -285,6 +316,17 @@ const AccountPage = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState(null);
   const [warningMessage, setWarningMessage] = useState("");
+  const [orders, setOrders] = useState([]);
+  const { userEmail } = useAuth();
+
+  // ✅ Fetch Orders for Logged-in User
+  useEffect(() => {
+    if (!userEmail) return;
+    axios
+      .get(`${API_BASE_URL}/orders/email/${userEmail}`)
+      .then((res) => setOrders(res.data))
+      .catch((err) => console.error("Error fetching orders:", err));
+  }, [userEmail]);
 
   const {
     register,
@@ -373,11 +415,24 @@ const AccountPage = () => {
   return (
     <AccountWrapper>
       <AccountSection>
+        {/* ✅ Order History Section */}
         <div className="card">
           <div className="header">Order History</div>
-          <p>You haven&apos;t placed any orders yet.</p>
-        </div>
-        <div className="card">
+          {orders.length > 0 ? (
+            <OrderList>
+              {orders.map((order) => (
+                <OrderCard key={order.id}>
+                  <p className="order-id">Order ID: {order.id}</p>
+                  <p className="total">Total: ${order.total_price}</p>
+                  <p className="status">
+                    Status: {order.status || "Processing"}
+                  </p>
+                </OrderCard>
+              ))}
+            </OrderList>
+          ) : (
+            <p>No orders found.</p>
+          )}
           <div className="header">Addresses</div>
           {warningMessage && (
             <WarningMessage>

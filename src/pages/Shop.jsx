@@ -1,16 +1,20 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import AboutUs from "../components/AboutUs";
 import Card from "../components/Card";
 import { motion } from "framer-motion";
+import candleBackground from "../assets/candlebackground.webp"; // ✅ backup image
+import axios from "axios";
+
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const ShopWrapper = styled.div`
   width: 100%;
-  padding: 2rem 0; /* Add vertical padding to Shop */
+  padding: 2rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-sizing: border-box; /* Consistent box-sizing */
+  box-sizing: border-box;
 `;
 
 const HeaderWrapper = styled.div`
@@ -21,12 +25,12 @@ const HeaderWrapper = styled.div`
 `;
 
 const Header = styled(motion.h1)`
-  font-family: "Pacifico", cursive !important; /* Cursive font */
-  font-size: 2.5rem; /* Adjust size */
-  color: #333; /* Header color */
+  font-family: "Pacifico", cursive !important;
+  font-size: 2.5rem;
+  color: #333;
   padding-top: 20px;
   text-align: center;
-  width: 100%; /* Ensure it spans the width */
+  width: 100%;
   letter-spacing: 4px;
 `;
 
@@ -38,65 +42,40 @@ const Line = styled(motion.div)`
 `;
 
 const CardsContainer = styled.div`
-  max-width: 1000px; /* Restrict width for the card grid */
+  max-width: 1000px;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
-  gap: 20px; /* Consistent spacing between cards */
-  padding: 2rem; /* Padding around the cards */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 2rem;
 
   @media (max-width: 900px) {
-    grid-template-columns: repeat(
-      2,
-      1fr
-    ); /* 2 cards per row on medium screens */
+    grid-template-columns: repeat(2, 1fr);
   }
 
   @media (max-width: 600px) {
-    grid-template-columns: 1fr; /* 1 card per row on small screens */
+    grid-template-columns: 1fr;
   }
 `;
 
-const cardData = [
-  {
-    id: "1",
-    title: "Ironwood Collection",
-    price: "$40.00",
-    description: "A rich, earthy scent with wooden tones.",
-  },
-  {
-    id: "2",
-    title: "Forge Line Series",
-    price: "$45.00",
-    description: "Sophisticated fragrances with bold designs.",
-  },
-  {
-    id: "3",
-    title: "Heritage Craft Collection",
-    price: "$50.00",
-    description: "Timeless designs for a touch of tradition.",
-  },
-  {
-    id: "4",
-    title: "Stonefire Collection",
-    price: "$55.00",
-    description: "Earthy elegance with natural stone-inspired looks.",
-  },
-  {
-    id: "5",
-    title: "Obsidian Black Label",
-    price: "$60.00",
-    description: "Luxury candles with a bold black finish.",
-  },
-  {
-    id: "6",
-    title: "Titan Series",
-    price: "$65.00",
-    description: "Larger-than-life candles for bold fragrances.",
-  },
-];
+const backupImage = candleBackground; // ✅ Use imported image
 
 const Shop = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await axios.get(`${API_BASE_URL}/products`);
+        setProducts(data);
+      } catch (error) {
+        console.error("❌ Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
     <ShopWrapper>
       <AboutUs />
@@ -116,8 +95,17 @@ const Shop = () => {
         />
       </HeaderWrapper>
       <CardsContainer>
-        {cardData.map((product) => (
-          <Card key={product.id} product={product} />
+        {products.map((product) => (
+          <Card
+            key={product.id}
+            product={{
+              id: product.id,
+              title: product.name,
+              price: `$${product.price.toFixed(2)}`,
+              description: product.description,
+              image: product.image_url || backupImage, // ✅ Always fallback correctly
+            }}
+          />
         ))}
       </CardsContainer>
     </ShopWrapper>
