@@ -1,30 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import candleBackground from "../assets/candlebackground.webp";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../context/useCart";
+import axios from "axios";
 
-// Dummy product data
-const dummyData = [
-  {
-    id: "1",
-    title: "Ironwood Collection",
-    price: "$40.00",
-    description: "A rich, earthy scent with wooden tones.",
-    extendedDescription: "Perfect for a cozy and rustic atmosphere.",
-    thumbnails: [candleBackground, candleBackground, candleBackground],
-  },
-  {
-    id: "2",
-    title: "Forge Line Series",
-    price: "$45.00",
-    description: "Sophisticated fragrances with bold designs.",
-    extendedDescription: "Ideal for those who enjoy a refined aesthetic.",
-    thumbnails: [candleBackground, candleBackground, candleBackground],
-  },
-];
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const PageWrapper = styled.div`
   display: flex;
@@ -61,12 +44,6 @@ const ImageSection = styled.div`
     max-height: 400px;
     object-fit: cover;
     border: 1px solid #ddd;
-    /* border-radius: 5px; */
-
-    @media (max-width: 768px) {
-      max-width: 360px; /* Reduced size for mobile */
-      max-height: 320px; /* Reduced size for mobile */
-    }
   }
 
   .thumbnails {
@@ -206,36 +183,42 @@ const DetailsSection = styled.div`
 
 const Showcase = () => {
   const { id } = useParams();
-  const location = useLocation();
   const { addToCart } = useCart();
+  const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [animateButton, setAnimateButton] = useState(false);
-
-  // Use either location.state or fallback to dummyData
-  const product = location.state || dummyData.find((item) => item.id === id);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0); // Scroll to the top when the component is mounted
   }, []);
 
-  // If no product is found, show an error message
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const { data } = await axios.get(`${API_BASE_URL}/products/search`, {
+          params: { attribute: "id", value: id },
+        });
+        setProduct(data[0] || null);
+      } catch (error) {
+        console.error("❌ Error fetching product:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
+    return <PageWrapper>Loading...</PageWrapper>;
+  }
+
   if (!product) {
     return <PageWrapper>Product not found.</PageWrapper>;
   }
 
   const handleAddToCart = () => {
     addToCart({ ...product, quantity });
-    setAnimateButton(true);
-    setTimeout(() => setAnimateButton(false), 300); // Reset animation state
-  };
-
-  const handleQuantityChange = (e) => {
-    const value = parseInt(e.target.value, 10);
-    if (isNaN(value) || value < 1) {
-      setQuantity(1);
-    } else {
-      setQuantity(value);
-    }
   };
 
   return (
@@ -244,35 +227,16 @@ const Showcase = () => {
       <PageWrapper>
         <ProductPageWrapper>
           <ImageSection>
-            {product?.thumbnails && product?.thumbnails.length > 0 ? (
-              <>
-                <img
-                  src={product.thumbnails[0]}
-                  alt={product.title}
-                  className="main-image"
-                />
-                <div className="thumbnails">
-                  {product.thumbnails.map((thumbnail, index) => (
-                    <img
-                      key={index}
-                      src={thumbnail}
-                      alt={`Thumbnail ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              </>
-            ) : (
-              <img
-                src={candleBackground} // Fallback to a default image
-                alt="Default product"
-                className="main-image"
-              />
-            )}
+            <img
+              src={candleBackground} // ✅ Always use backup image for now
+              alt="Candle"
+              className="main-image"
+            />
           </ImageSection>
 
           <DetailsSection>
-            <h1>{product?.title}</h1>
-            <p className="price">{product?.price}</p>
+            <h1>{product.name}</h1>
+            <p className="price">${product.price.toFixed(2)}</p>
             <p className="shipping-info">Shipping calculated at checkout.</p>
             <div className="quantity-wrapper">
               <span className="quantity-label">Quantity</span>
@@ -285,7 +249,12 @@ const Showcase = () => {
                 <input
                   type="number"
                   value={quantity}
-                  onChange={handleQuantityChange}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    if (!isNaN(value) && value >= 1) {
+                      setQuantity(value);
+                    }
+                  }}
                 />
                 <button onClick={() => setQuantity((prev) => prev + 1)}>
                   +
@@ -296,35 +265,15 @@ const Showcase = () => {
               <motion.button
                 className="add-to-cart"
                 onClick={() => handleAddToCart()}
-                animate={animateButton ? { scale: 1.1 } : { scale: 1 }}
-                transition={{ type: "spring", stiffness: 300, damping: 10 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Add to Cart
-                {animateButton && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0 }}
-                    transition={{ duration: 0.3 }}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      background: "rgba(0, 0, 0, 0.1)",
-                      borderRadius: "inherit",
-                      zIndex: -1,
-                    }}
-                  />
-                )}
               </motion.button>
               <button className="buy-now">Buy it Now</button>
             </div>
             <div className="description">
               <h2>Product Details</h2>
-              <p>{product?.description}</p>
-              <p>{product?.extendedDescription}</p>
+              <p>{product.description}</p>
             </div>
           </DetailsSection>
         </ProductPageWrapper>
