@@ -198,8 +198,7 @@ const WarningMessage = styled.div`
 const AddAddressSection = styled.div`
   background-color: #fff;
   padding: 20px;
-  margin: 20px auto 0 auto;
-  max-width: 600px;
+  margin-top: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
   form {
@@ -513,6 +512,104 @@ const AccountPage = () => {
               >
                 Add New Address
               </button>
+
+              {isAdding && (
+                <AddAddressSection>
+                  <form onSubmit={handleSubmit(onSubmit)}>
+                    <input
+                      type="text"
+                      placeholder="First Name"
+                      {...register("first_name")}
+                    />
+                    {errors.first_name && (
+                      <span className="error-message">
+                        {errors.first_name.message}
+                      </span>
+                    )}
+
+                    <input
+                      type="text"
+                      placeholder="Last Name"
+                      {...register("last_name")}
+                    />
+                    {errors.last_name && (
+                      <span className="error-message">
+                        {errors.last_name.message}
+                      </span>
+                    )}
+
+                    <input
+                      type="text"
+                      placeholder="Street Address"
+                      {...register("street")}
+                    />
+                    {errors.street && (
+                      <span className="error-message">
+                        {errors.street.message}
+                      </span>
+                    )}
+
+                    <input
+                      type="text"
+                      placeholder="City"
+                      {...register("city")}
+                    />
+                    {errors.city && (
+                      <span className="error-message">
+                        {errors.city.message}
+                      </span>
+                    )}
+
+                    <select {...register("state")}>
+                      <option value="">Select State</option>
+                      {usStates.map((state) => (
+                        <option key={state} value={state}>
+                          {state}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.state && (
+                      <span className="error-message">
+                        {errors.state.message}
+                      </span>
+                    )}
+
+                    <input
+                      type="text"
+                      placeholder="ZIP Code"
+                      {...register("zip")}
+                    />
+                    {errors.zip && (
+                      <span className="error-message">
+                        {errors.zip.message}
+                      </span>
+                    )}
+
+                    <label>
+                      <input type="checkbox" {...register("isDefault")} /> Set
+                      as default address
+                    </label>
+
+                    <div className="button-group">
+                      <button type="submit" className="save">
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        className="cancel"
+                        onClick={() => {
+                          setIsAdding(false);
+                          setEditingAddressId(null);
+                          reset();
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </AddAddressSection>
+              )}
+              {/* -- END of the form block -- */}
             </div>
           )}
           {activeTab === "account" && (
@@ -525,75 +622,6 @@ const AccountPage = () => {
           )}
         </ContentArea>
       </AccountInner>
-      {isAdding && (
-        <AddAddressSection>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <input
-              type="text"
-              placeholder="First Name"
-              {...register("first_name")}
-            />
-            {errors.first_name && (
-              <span className="error-message">{errors.first_name.message}</span>
-            )}
-            <input
-              type="text"
-              placeholder="Last Name"
-              {...register("last_name")}
-            />
-            {errors.last_name && (
-              <span className="error-message">{errors.last_name.message}</span>
-            )}
-            <input
-              type="text"
-              placeholder="Street Address"
-              {...register("street")}
-            />
-            {errors.street && (
-              <span className="error-message">{errors.street.message}</span>
-            )}
-            <input type="text" placeholder="City" {...register("city")} />
-            {errors.city && (
-              <span className="error-message">{errors.city.message}</span>
-            )}
-            <select {...register("state")}>
-              <option value="">Select State</option>
-              {usStates.map((state) => (
-                <option key={state} value={state}>
-                  {state}
-                </option>
-              ))}
-            </select>
-            {errors.state && (
-              <span className="error-message">{errors.state.message}</span>
-            )}
-            <input type="text" placeholder="ZIP Code" {...register("zip")} />
-            {errors.zip && (
-              <span className="error-message">{errors.zip.message}</span>
-            )}
-            <label>
-              <input type="checkbox" {...register("isDefault")} /> Set as
-              default address
-            </label>
-            <div className="button-group">
-              <button type="submit" className="save">
-                Save
-              </button>
-              <button
-                type="button"
-                className="cancel"
-                onClick={() => {
-                  setIsAdding(false);
-                  setEditingAddressId(null);
-                  reset();
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </AddAddressSection>
-      )}
     </AccountContainer>
   );
 };
