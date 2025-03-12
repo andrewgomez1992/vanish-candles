@@ -11,7 +11,7 @@ import ShippingPolicyModal from "../components/modals/ShippingPolicyModal";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const CheckoutPageContainer = styled.div`
-  margin-top: 150px;
+  margin-top: 180px;
   margin-bottom: 50px;
   display: flex;
   flex-wrap: wrap;

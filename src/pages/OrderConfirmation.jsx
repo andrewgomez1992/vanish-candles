@@ -4,10 +4,10 @@ import styled from "styled-components";
 const ConfirmationWrapper = styled.div`
   max-width: 500px;
   margin: 120px auto 50px;
+  margin-top: 180px;
   padding: 30px;
   background-color: #fff;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
   text-align: center;
 `;
 
@@ -50,7 +50,6 @@ const BackButton = styled.button`
   background-color: #000;
   border: none;
   cursor: pointer;
-  border-radius: 5px;
   transition: 0.3s ease-in-out;
 
   &:hover {
