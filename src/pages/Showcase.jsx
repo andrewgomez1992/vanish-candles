@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
@@ -188,6 +189,8 @@ const Showcase = () => {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     window.scrollTo(0, 0); // Scroll to the top when the component is mounted
   }, []);
@@ -219,6 +222,11 @@ const Showcase = () => {
 
   const handleAddToCart = () => {
     addToCart({ ...product, quantity });
+  };
+
+  const handleBuyNow = () => {
+    addToCart({ ...product, quantity });
+    navigate("/cart");
   };
 
   return (
@@ -269,7 +277,9 @@ const Showcase = () => {
               >
                 Add to Cart
               </motion.button>
-              <button className="buy-now">Buy it Now</button>
+              <button className="buy-now" onClick={handleBuyNow}>
+                Buy it Now
+              </button>
             </div>
             <div className="description">
               <h2>Product Details</h2>
