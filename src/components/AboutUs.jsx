@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 const AboutUsWrapper = styled(motion.section)`
   position: relative;
-  background-color: #f5f5f5;
+  background-color: #fff;
   padding: 2rem;
   text-align: left;
   margin-top: -100px; /* Overlap with the hero section */

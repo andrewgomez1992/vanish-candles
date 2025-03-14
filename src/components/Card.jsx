@@ -7,15 +7,17 @@ import candleBackground from "../assets/candlebackground.webp";
 const CardWrapper = styled.div`
   background-color: #fff;
   text-align: center;
-  padding: 1.5rem; /* Restored padding */
+  padding: 1.5rem;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   position: relative;
+  letter-spacing: 0.5px;
 
   &:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
     box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.15);
+    background-color: rgb(225, 225, 225);
   }
 `;
 
