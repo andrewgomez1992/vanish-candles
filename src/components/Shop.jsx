@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import AboutUs from "../components/AboutUs";
-import Card from "../components/Card";
+import AboutUs from "./AboutUs";
+import Card from "./Card";
 import { motion } from "framer-motion";
-import candleBackground from "../assets/candlebackground.webp"; // ✅ backup image
+import candleBackground from "../assets/candlebackground.webp";
 import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -15,6 +15,7 @@ const ShopWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
+  background-color: #f5f5f5;
 `;
 
 const HeaderWrapper = styled.div`
@@ -46,7 +47,7 @@ const CardsContainer = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 10px;
   padding: 2rem;
 
   @media (max-width: 900px) {
@@ -58,7 +59,7 @@ const CardsContainer = styled.div`
   }
 `;
 
-const backupImage = candleBackground; // ✅ Use imported image
+const backupImage = candleBackground;
 
 const Shop = () => {
   const [products, setProducts] = useState([]);
@@ -97,17 +98,24 @@ const Shop = () => {
         />
       </HeaderWrapper>
       <CardsContainer>
-        {products.map((product) => (
-          <Card
+        {products.map((product, index) => (
+          <motion.div
             key={product.id}
-            product={{
-              id: product.id,
-              title: product.name,
-              price: `$${product.price.toFixed(2)}`,
-              description: product.description,
-              image: product.image_url || backupImage, // ✅ Always fallback correctly
-            }}
-          />
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
+            <Card
+              product={{
+                id: product.id,
+                title: product.name,
+                price: `$${product.price.toFixed(2)}`,
+                description: product.description,
+                image: product.image_url || backupImage,
+              }}
+            />
+          </motion.div>
         ))}
       </CardsContainer>
     </ShopWrapper>

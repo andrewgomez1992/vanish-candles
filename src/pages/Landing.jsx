@@ -1,8 +1,9 @@
-import React from "react";
 import styled from "styled-components";
 import Hero from "../components/Hero";
 import Navbar from "../components/Navbar";
-import Shop from "./Shop";
+import Shop from "../components/Shop";
+import Testimonials from "../components/Testimonials";
+import OurPromise from "../components/OurPromise";
 
 const LandingPageWrapper = styled.div`
   width: 100%;
@@ -15,6 +16,8 @@ const Landing = () => {
       <Navbar />
       <Hero />
       <Shop />
+      <Testimonials />
+      <OurPromise />
     </LandingPageWrapper>
   );
 };

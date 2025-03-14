@@ -1,12 +1,12 @@
 import styled from "styled-components";
 
 const ContactWrapper = styled.div`
-  padding: 180px 20px;
-  background-color: #f9f9f9;
+  margin-block-start: 9.375rem;
+  margin-block-end: 1.5625rem;
 
   @media (max-width: 768px) {
-    padding: 20px 20px;
-    margin-top: 80px;
+    margin-block-start: 6.25rem;
+    padding-inline: 1.25rem;
   }
 `;
 
