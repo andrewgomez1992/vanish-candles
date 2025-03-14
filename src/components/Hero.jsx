@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import candleBackground from "../assets/candlebackground.webp";
@@ -38,10 +38,14 @@ const Overlay = styled.div`
 const ControlsWrapper = styled(motion.div)`
   position: absolute;
   bottom: 90px;
-  left: 20px;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  max-width: 1040px;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  padding-left: 20px;
   gap: 10px;
   z-index: 3;
 `;
