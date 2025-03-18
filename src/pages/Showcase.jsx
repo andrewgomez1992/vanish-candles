@@ -12,6 +12,7 @@ import candleBackground3 from "../assets/candlebackground3.webp";
 import { useCart } from "../context/useCart";
 import RelatedProducts from "../components/RelatedProducts";
 import { scrollToShopSection } from "../util/scrollToShopSection";
+import scrollToTop from "../util/scrollToTop";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -280,6 +281,7 @@ const Showcase = () => {
   const handleBuyNow = () => {
     addToCart({ ...product, quantity });
     navigate("/cart");
+    scrollToTop();
   };
 
   const handleBackToShop = () => {
