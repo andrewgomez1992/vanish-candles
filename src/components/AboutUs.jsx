@@ -7,35 +7,34 @@ const AboutUsWrapper = styled(motion.section)`
   background-color: #fff;
   padding: 2rem;
   text-align: left;
-  margin-top: -100px; /* Overlap with the hero section */
+  margin-top: -100px;
   z-index: 2;
-  max-width: 1000px; /* Maximum width for wider screens */
-  width: calc(100% - 40px); /* Ensure 20px margin on both sides */
+  max-width: 1000px;
+  width: calc(100% - 40px);
   margin-left: auto;
   margin-right: auto;
   box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
-  min-height: 200px; /* Optional: Add a minimum height if needed */
+  min-height: 200px;
 
   h2 {
     font-size: 1.2rem;
-    margin-bottom: 1rem; /* Adjust spacing */
+    margin-bottom: 1rem;
     color: #333;
   }
 
   p {
     font-size: 0.9rem;
-    line-height: 1.4; /* Reduce line-height for shorter content */
-    margin-bottom: 1.5rem; /* Adjust spacing */
+    line-height: 1.4;
+    margin-bottom: 1.5rem;
     color: #555;
   }
 
   button {
-    padding: 8px 16px; /* Reduce button padding */
-    font-size: 0.9rem; /* Slightly smaller button font size */
+    padding: 8px 16px;
+    font-size: 0.9rem;
     background-color: black;
     color: white;
     border: none;
-    border-radius: 0; /* No border radius */
     cursor: pointer;
 
     &:hover {

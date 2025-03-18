@@ -7,6 +7,8 @@ import * as Yup from "yup";
 import { usStates } from "../constants/usStates";
 import { useAuth } from "../hooks/useAuth";
 
+// export all logic into components etc - take Landing.jsx for example
+
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AccountContainer = styled.div`
@@ -255,6 +257,7 @@ const AddAddressSection = styled.div`
 `;
 
 /* ------------------ Validation Schema ------------------ */
+// ISOLATE SCHEMA
 const addressSchema = Yup.object().shape({
   first_name: Yup.string()
     .matches(/^[A-Za-z\s'-]+$/, "Only letters, spaces, apostrophes, or hyphens")
