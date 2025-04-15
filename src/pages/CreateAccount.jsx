@@ -172,9 +172,7 @@ const CreateAccount = () => {
           setError("Email already in use. Please login or use another email.");
         }
       } else if (error.response?.status === 405) {
-        setError(
-          "Sorry the backend isn't currently live :( I can show you it locally until it is! lol"
-        );
+        setError("Sorry the backend isn't currently live yet :(");
       } else {
         setError(
           error.response?.data?.message ||
