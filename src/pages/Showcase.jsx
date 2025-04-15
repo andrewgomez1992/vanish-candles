@@ -306,7 +306,7 @@ const Showcase = () => {
           {/* Image + Thumbnails on the left */}
           <ImageSection>
             <div className="thumbnails">
-              {images.map((img, idx) => (
+              {images?.map((img, idx) => (
                 <img
                   key={idx}
                   src={img}

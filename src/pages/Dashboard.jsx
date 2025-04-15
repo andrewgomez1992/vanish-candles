@@ -348,7 +348,7 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order) => (
+                {orders?.map((order) => (
                   <tr key={order.id}>
                     <td>{order.id}</td>
                     <td>{order.customer}</td>
@@ -411,7 +411,7 @@ const AdminDashboard = () => {
             </ProductForm>
           )}
           <ProductList>
-            {productList.map((product) => (
+            {productList?.map((product) => (
               <ProductCard key={product.id}>
                 <img src={candleBackground} alt={product.title} />
                 <h3>{product.title}</h3>

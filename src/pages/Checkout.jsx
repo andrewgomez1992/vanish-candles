@@ -362,7 +362,7 @@ const Checkout = () => {
 
     try {
       // Prepare your items array
-      const formattedItems = cart.map((item) => ({
+      const formattedItems = cart?.map((item) => ({
         id: item.id,
         quantity: item.quantity,
       }));
@@ -438,7 +438,7 @@ const Checkout = () => {
                     value={selectedAddressId}
                     onChange={handleSelectSavedAddress}
                   >
-                    {dummyAddresses.map((addr) => (
+                    {dummyAddresses?.map((addr) => (
                       <option key={addr.id} value={addr.id}>
                         {addr.label}
                       </option>
@@ -528,7 +528,7 @@ const Checkout = () => {
               </SectionHeader>
 
               <SectionContent isOpen={shippingOpen}>
-                {dummyShippingMethods.map((method) => (
+                {dummyShippingMethods?.map((method) => (
                   <RadioOption key={method.id}>
                     <input
                       type="radio"
@@ -583,7 +583,7 @@ const Checkout = () => {
       <RightColumn>
         <SectionTitle>Order Summary</SectionTitle>
 
-        {cart.map((item) => (
+        {cart?.map((item) => (
           <CartItemContainer key={item.id}>
             <CartItemImage src={candlePlacerholder} alt={item.name} />
             <CartItemDetails>

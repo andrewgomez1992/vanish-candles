@@ -333,12 +333,12 @@ const AccountPage = () => {
     }
     if (data.isDefault) {
       setAddresses((prev) =>
-        prev.map((addr) => ({ ...addr, isDefault: false }))
+        prev?.map((addr) => ({ ...addr, isDefault: false }))
       );
     }
     if (editingAddressId !== null) {
       setAddresses((prev) =>
-        prev.map((addr) =>
+        prev?.map((addr) =>
           addr.id === editingAddressId ? { ...data, id: addr.id } : addr
         )
       );
@@ -366,7 +366,7 @@ const AccountPage = () => {
 
   const handleSetDefault = (id) => {
     setAddresses((prev) =>
-      prev.map((addr) => ({ ...addr, isDefault: addr.id === id }))
+      prev?.map((addr) => ({ ...addr, isDefault: addr.id === id }))
     );
   };
 
@@ -423,7 +423,7 @@ const AccountPage = () => {
               {orders.length === 0 ? (
                 <p>You haven&apos;t placed any orders yet.</p>
               ) : (
-                orders.map((order) => (
+                orders?.map((order) => (
                   <AccordionItem key={order.id}>
                     <AccordionHeader
                       onClick={() => toggleOrderAccordion(order.id)}
@@ -458,7 +458,7 @@ const AccountPage = () => {
               {addresses.length === 0 ? (
                 <p>No addresses saved.</p>
               ) : (
-                addresses.map((address) => (
+                addresses?.map((address) => (
                   <AddressCard key={address.id}>
                     <div className="address-details">
                       {address.isDefault && (
@@ -565,7 +565,7 @@ const AccountPage = () => {
 
                     <select {...register("state")}>
                       <option value="">Select State</option>
-                      {usStates.map((state) => (
+                      {usStates?.map((state) => (
                         <option key={state} value={state}>
                           {state}
                         </option>
