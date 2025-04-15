@@ -13,6 +13,7 @@ import { useCart } from "../context/useCart";
 import RelatedProducts from "../components/RelatedProducts";
 import { scrollToShopSection } from "../util/scrollToShopSection";
 import scrollToTop from "../util/scrollToTop";
+import { fakeProducts } from "../constants/fakeProducts";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -255,9 +256,18 @@ const Showcase = () => {
         const { data } = await axios.get(`${API_BASE_URL}/products/search`, {
           params: { attribute: "id", value: id },
         });
-        setProduct(data[0] || null);
+
+        if (Array.isArray(data) && data.length > 0) {
+          setProduct(data[0]);
+        } else {
+          // fallback to fake product
+          const fallback = fakeProducts.find((item) => item.id === id);
+          setProduct(fallback || null);
+        }
       } catch (error) {
         console.error("❌ Error fetching product:", error);
+        const fallback = fakeProducts.find((item) => item.id === id);
+        setProduct(fallback || null);
       } finally {
         setLoading(false);
       }

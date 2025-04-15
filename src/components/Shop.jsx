@@ -4,6 +4,7 @@ import AboutUs from "./AboutUs";
 import Card from "./Card";
 import { motion } from "framer-motion";
 import candleBackground from "../assets/candlebackground.webp";
+import { fakeProducts } from "../constants/fakeProducts";
 import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -70,9 +71,14 @@ const Shop = () => {
         const { data } = await axios.get(
           `${API_BASE_URL}/products/all-products`
         );
-        setProducts(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setProducts(data);
+        } else {
+          setProducts(fakeProducts);
+        }
       } catch (error) {
         console.error("❌ Error fetching products:", error);
+        setProducts(fakeProducts);
       }
     };
 
@@ -98,7 +104,7 @@ const Shop = () => {
         />
       </HeaderWrapper>
       <CardsContainer>
-        {products?.map((product, index) => (
+        {products.map((product, index) => (
           <motion.div
             key={product.id}
             initial={{ opacity: 0, y: 50 }}
