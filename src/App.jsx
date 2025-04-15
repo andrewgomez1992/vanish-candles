@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { loadStripe } from "@stripe/stripe-js";
+// import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import Navbar from "./components/Navbar";
 import Showcase from "./pages/Showcase";
@@ -18,7 +18,7 @@ import ProtectedRoute from "./routes/ProtecedRoute";
 import VerifyEmail from "./pages/VerifyEmail";
 import OrderConfirmation from "./pages/OrderConfirmation";
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+// const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const App = () => {
   return (
@@ -26,7 +26,9 @@ const App = () => {
       <Router>
         <Navbar />
         {/* ✅ Wrap Routes with Elements to make Stripe available */}
-        <Elements stripe={stripePromise}>
+        <Elements
+        // stripe={stripePromise}
+        >
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/product/:id" element={<Showcase />} />
