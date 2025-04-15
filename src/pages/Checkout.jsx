@@ -411,7 +411,11 @@ const Checkout = () => {
       setSuccess(true);
       setTimeout(() => navigate("/order-confirmation"), 3000);
     } catch (err) {
-      setError(err.message || "Payment failed.");
+      if (err?.response?.status === 405) {
+        setError("Sorry the backend isn't currently live :(");
+      } else {
+        setError(err.message || "Payment failed. Please try again.");
+      }
     }
 
     setLoading(false);
