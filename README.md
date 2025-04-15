@@ -29,7 +29,7 @@
 - 🔐 **Authentication** — Register, sign in, session handling
 - 🔧 **Product Browsing** — Clean, mobile-first UI to explore products
 - 🛍️ **Shopping Cart** — Add/remove items and quantity control
-- 💳 **Stripe Checkout** — Secure payments
+- 💳 **Stripe Checkout** — Secure payments _(integration in progress)_
 - 📬 **Email Confirmation** _(integration in progress)_
 - 🧑‍💼 **Admin Panel** — Manage inventory and view orders _(role-based)_
 - 🔄 **Fallback UX** — Gracefully handles offline/backend-down scenarios
@@ -40,13 +40,6 @@
 ## 🎯 Why This Project?
 
 This app simulates a real-world e-commerce flow — but polished with design sensibility. It's more than just a CRUD project: it reflects UX thinking, component reuse, defensive coding, and clear separation of concerns. Built to impress _and_ scale.
-
----
-
-## 📬 Contact
-
-Have a project in mind or want to chat about frontend roles?  
-**Let’s connect!** Reach out at `andrewgomez.dev@gmail.com` or drop me a message on [LinkedIn](https://linkedin.com/in/your-profile).
 
 ---
 
