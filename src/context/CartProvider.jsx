@@ -42,7 +42,7 @@ export const CartProvider = ({ children }) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((cartItem) => cartItem.id === id);
       if (existingItem.quantity > 1) {
-        return prevCart.map((cartItem) =>
+        return prevCart?.map((cartItem) =>
           cartItem.id === id
             ? { ...cartItem, quantity: cartItem.quantity - 1 }
             : cartItem

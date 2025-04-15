@@ -162,7 +162,7 @@ const RelatedProducts = ({ currentProductId }) => {
     <RelatedContainer>
       <RelatedTitle>You May Also Love</RelatedTitle>
       <ProductList>
-        {products.map((item) => {
+        {products?.map((item) => {
           // Placeholder logic: if price < 30, show "Sale" badge
           const isSale = item.price < 30;
           // Placeholder star rating

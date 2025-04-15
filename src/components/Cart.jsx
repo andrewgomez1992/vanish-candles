@@ -227,7 +227,7 @@ const Cart = () => {
           <>
             {/* CART ITEMS */}
             <CartItemsContainer>
-              {cart.map((item) => {
+              {cart?.map((item) => {
                 // Compute line total first
                 const lineTotal = item.price * item.quantity;
 

@@ -98,7 +98,7 @@ const Shop = () => {
         />
       </HeaderWrapper>
       <CardsContainer>
-        {products.map((product, index) => (
+        {products?.map((product, index) => (
           <motion.div
             key={product.id}
             initial={{ opacity: 0, y: 50 }}

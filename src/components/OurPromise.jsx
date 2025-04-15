@@ -76,7 +76,7 @@ const OurPromise = () => {
     >
       <SectionTitle>Our Promise</SectionTitle>
       <CardGrid>
-        {cards.map((card, idx) => (
+        {cards?.map((card, idx) => (
           <Card
             key={idx}
             initial={{ opacity: 0, y: 50 }}
