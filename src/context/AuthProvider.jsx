@@ -9,23 +9,6 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setToken(storedToken);
-      setIsLoggedIn(true);
-      const decodedToken = parseJwt(storedToken);
-
-      if (decodedToken?.email) {
-        setUserEmail(decodedToken.email);
-      }
-
-      if (decodedToken?.role?.toLowerCase() === "admin") {
-        setIsAdmin(true);
-      }
-    }
-  }, []);
-
   const parseJwt = (token) => {
     try {
       const decoded = JSON.parse(atob(token.split(".")[1]));
@@ -35,6 +18,31 @@ export const AuthProvider = ({ children }) => {
       return null;
     }
   };
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  // 🔁 Update user info when token changes
+  useEffect(() => {
+    if (!token) return;
+
+    const decodedToken = parseJwt(token);
+
+    if (decodedToken?.email) {
+      setUserEmail(decodedToken.email);
+    }
+
+    if (decodedToken?.role?.toLowerCase() === "admin") {
+      setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
+    }
+  }, [token]);
 
   const login = async (email, password) => {
     try {
@@ -47,15 +55,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", token);
       setToken(token);
       setIsLoggedIn(true);
-      const decodedToken = parseJwt(token);
-
-      if (decodedToken?.email) {
-        setUserEmail(decodedToken.email);
-      }
-
-      if (decodedToken?.role?.toLowerCase() === "admin") {
-        setIsAdmin(true);
-      }
     } catch (error) {
       console.error("Login error:", error);
       throw error;
