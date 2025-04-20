@@ -1,6 +1,14 @@
-# 🔧 Vanish Candles
+<h1 align="center">🔧 Vanish Candles</h1>
 
-**Vanish Candles** is a luxurious, modern e-commerce frontend built with React — designed to elegantly showcase and sell high-end candles. With smooth animations, secure Stripe checkout, and a custom admin dashboard, this project blends beautiful design with real-world functionality.
+<p align="center">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" />
+  <img src="https://img.shields.io/badge/Built%20With-React-61DAFB?logo=react&logoColor=black" alt="React" />
+  <img src="https://img.shields.io/badge/Styled--Components-DB7093?logo=styled-components&logoColor=white" alt="Styled Components" />
+  <img src="https://img.shields.io/badge/Checkout-Stripe-635BFF?logo=stripe&logoColor=white" alt="Stripe" />
+  <img src="https://img.shields.io/badge/Hosting-Vercel-black?logo=vercel" alt="Vercel" />
+</p>
+
+<p align="center"><strong>Vanish Candles</strong> is a luxurious, modern e-commerce frontend built with React — designed to elegantly showcase and sell high-end candles. With smooth animations, secure Stripe checkout, and a custom admin dashboard, this project blends beautiful design with real-world functionality.</p>
 
 ---
 
