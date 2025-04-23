@@ -1,4 +1,4 @@
-<h1 align="center">🔧 Vanish Candles</h1>
+<h1 align="center">🔧 Vanish Candles - Frontend </h1>
 
 <p align="center">
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" />
@@ -47,7 +47,7 @@
 
 ## 🎯 Why This Project?
 
-This app simulates a real-world e-commerce flow — but polished with design sensibility. It's more than just a CRUD project: it reflects UX thinking, component reuse, defensive coding, and clear separation of concerns. Built to impress _and_ scale.
+I'm planning on building a candle business with my brother and thought this would be a great chance to collaborate and create something to be proud of, while also getting a chance to build my engineering skills.
 
 ---
 
