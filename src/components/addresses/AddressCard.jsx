@@ -2,61 +2,84 @@ import styled from "styled-components";
 
 const Card = styled.div`
   border: 1px solid #ddd;
-  padding: 15px;
-  margin-bottom: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  background: #fff;
+`;
 
-  .address-details {
-    flex: 1;
-    margin-right: 10px;
+const Details = styled.div`
+  flex: 1;
+  margin-right: 16px;
 
-    p {
-      margin: 2px 0;
-    }
-
-    .default {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-  }
-
-  .actions {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-
-    button {
-      border: none;
-      background-color: transparent;
-      cursor: pointer;
-      font-size: 0.9rem;
-
-      &:hover {
-        text-decoration: underline;
-      }
-
-      &.delete {
-        color: red;
-      }
-
-      &.edit {
-        color: blue;
-      }
-    }
+  p {
+    margin: 4px 0;
+    line-height: 1.4;
   }
 `;
 
-const AddressCard = ({ address, onEdit, onDelete }) => (
+const Actions = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0px;
+  min-width: 100px;
+
+  button,
+  .default-label {
+    font-size: 0.9rem;
+    padding: 6px 0px;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+  }
+
+  .edit {
+    color: #007bff;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .delete {
+    color: #dc3545;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .set-default {
+    color: #28a745;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .default-label {
+    color: #fff;
+    background: #28a745;
+    cursor: default;
+    padding: 6px 12px;
+  }
+`;
+
+const AddressCard = ({ address, onEdit, onDelete, onSetDefault }) => (
   <Card>
-    <div className="address-details">
-      {address.isDefault && <p className="default">Default Address</p>}
-      <p>{`${address.first_name} ${address.last_name}`}</p>
+    <Details>
+      <p>
+        <strong>
+          {address.first_name} {address.last_name}
+        </strong>
+      </p>
       <p>{address.street}</p>
-      <p>{`${address.city}, ${address.state} ${address.zip}`}</p>
-    </div>
-    <div className="actions">
+      <p>
+        {address.city}, {address.state} {address.zip}
+      </p>
+    </Details>
+
+    <Actions>
       <button type="button" className="edit" onClick={() => onEdit(address)}>
         Edit
       </button>
@@ -67,7 +90,18 @@ const AddressCard = ({ address, onEdit, onDelete }) => (
       >
         Delete
       </button>
-    </div>
+      {address.isDefault ? (
+        <span className="default-label">Default</span>
+      ) : (
+        <button
+          type="button"
+          className="set-default"
+          onClick={() => onSetDefault(address.id)}
+        >
+          Set as Default
+        </button>
+      )}
+    </Actions>
   </Card>
 );
 

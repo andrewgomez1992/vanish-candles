@@ -94,6 +94,7 @@ const AccountPage = () => {
             ))}
           </SidebarList>
         </Sidebar>
+
         <ContentArea>
           {activeTab === "overview" && (
             <>
@@ -107,12 +108,20 @@ const AccountPage = () => {
           {activeTab === "addresses" && (
             <>
               <h2>Your Addresses</h2>
-              {error && <p style={{ color: "red" }}>{error.toString()}</p>}
               <AddressList
                 addresses={addresses}
                 onAdd={addAddress}
                 onUpdate={updateAddress}
                 onDelete={deleteAddress}
+                onSetDefault={(id) => {
+                  const addr = addresses.find((a) => a.id === id);
+                  if (!addr) return Promise.reject("Address not found");
+                  return updateAddress(id, {
+                    ...addr,
+                    isDefault: true,
+                  });
+                }}
+                error={error}
               />
             </>
           )}

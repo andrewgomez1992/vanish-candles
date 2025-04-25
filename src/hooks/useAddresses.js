@@ -22,7 +22,13 @@ export function useAddresses() {
   const addAddress = async (addr) => {
     try {
       const { data } = await axiosInstance.post("/users/addresses", addr);
-      setAddresses((a) => [...a, data]);
+
+      setAddresses((prev) =>
+        addr.isDefault
+          ? prev.map((x) => ({ ...x, isDefault: false })).concat(data)
+          : [...prev, data]
+      );
+
       return data;
     } catch (err) {
       console.error("Add address error:", err.response?.data || err);
@@ -32,15 +38,25 @@ export function useAddresses() {
 
   const updateAddress = async (id, addr) => {
     try {
-      // Create payload without the id field to satisfy backend validation
+      // Build a clean DTO payload
       const payload = { ...addr };
       delete payload.id;
+      delete payload.user;
 
       const { data } = await axiosInstance.patch(
         `/users/addresses/${id}`,
         payload
       );
-      setAddresses((prev) => prev.map((x) => (x.id === id ? data : x)));
+
+      // Update local state
+      setAddresses((prev) =>
+        prev.map((x) => {
+          if (x.id === id) return data;
+          if (payload.isDefault) return { ...x, isDefault: false };
+          return x;
+        })
+      );
+
       return data;
     } catch (err) {
       console.error("Update address error:", err.response?.data || err);
