@@ -8,51 +8,90 @@ const ListContainer = styled.div`
   flex-direction: column;
   gap: 20px;
 `;
-
 const AddButton = styled.button`
   padding: 10px 20px;
   background-color: #000;
   color: #fff;
   border: none;
   cursor: pointer;
-  border-radius: 4px;
   align-self: flex-start;
-
   &:hover {
     background-color: #333;
   }
 `;
 
-const AddressList = ({ addresses, onAdd, onUpdate, onDelete }) => {
+const AddressList = ({
+  addresses,
+  onAdd,
+  onUpdate,
+  onDelete,
+  onSetDefault,
+}) => {
   const [editing, setEditing] = useState(null);
+  const [formError, setFormError] = useState("");
+
+  const openForm = (addr) => {
+    setFormError("");
+    setEditing(addr);
+  };
+
+  const handleSave = async (data) => {
+    try {
+      if (editing?.id) await onUpdate(editing.id, data);
+      else await onAdd(data);
+      setEditing(null);
+    } catch (err) {
+      setFormError(err.message || JSON.stringify(err));
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await onDelete(id);
+    } catch (err) {
+      setFormError(err.message || JSON.stringify(err));
+    }
+  };
+
+  const handleSetDefault = async (id) => {
+    try {
+      // delegate to parent’s onSetDefault prop
+      await onSetDefault(id);
+    } catch (err) {
+      setFormError(err.message || JSON.stringify(err));
+    }
+  };
 
   return (
     <ListContainer>
-      {addresses.map((address) => (
-        <AddressCard
-          key={address.id}
-          address={address}
-          onEdit={() => setEditing(address)}
-          onDelete={onDelete}
-        />
-      ))}
+      {formError && (
+        <div style={{ color: "#a00", marginBottom: 12 }}>{formError}</div>
+      )}
+      {addresses.length === 0 && <p>No saved addresses. Add one below!</p>}
 
-      <AddButton type="button" onClick={() => setEditing({})}>
+      {addresses.map((address) => {
+        const effectiveDefault = addresses.length === 1 || address.isDefault;
+        return (
+          <AddressCard
+            key={address.id}
+            address={{ ...address, isDefault: effectiveDefault }}
+            onEdit={() => openForm(address)}
+            onDelete={() => handleDelete(address.id)}
+            onSetDefault={() => handleSetDefault(address.id)}
+          />
+        );
+      })}
+
+      <AddButton type="button" onClick={() => openForm({})}>
         Add New Address
       </AddButton>
 
       {editing !== null && (
         <AddressForm
           initialValues={editing.id ? editing : null}
-          onSave={(data) => {
-            if (editing.id) {
-              onUpdate(editing.id, data);
-            } else {
-              onAdd(data);
-            }
-            setEditing(null);
-          }}
+          onSave={handleSave}
           onCancel={() => setEditing(null)}
+          errorMessage={formError}
         />
       )}
     </ListContainer>

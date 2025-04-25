@@ -10,6 +10,15 @@ const FormSection = styled.div`
   margin-top: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
+  .form-error {
+    color: #a00;
+    background: #fee;
+    padding: 8px;
+    border: 1px solid #a00;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+
   form {
     display: flex;
     flex-direction: column;
@@ -46,6 +55,7 @@ const FormSection = styled.div`
       .save {
         background-color: #000;
         color: #fff;
+
         &:hover {
           background-color: #333;
         }
@@ -54,6 +64,7 @@ const FormSection = styled.div`
       .cancel {
         background-color: #ddd;
         color: #000;
+
         &:hover {
           background-color: #bbb;
         }
@@ -62,7 +73,6 @@ const FormSection = styled.div`
   }
 `;
 
-// Validation schema for the address form
 const addressSchema = Yup.object().shape({
   first_name: Yup.string()
     .matches(/^[A-Za-z\s'-]+$/, "Only letters, spaces, apostrophes, or hyphens")
@@ -85,7 +95,7 @@ const addressSchema = Yup.object().shape({
   isDefault: Yup.boolean(),
 });
 
-const AddressForm = ({ onSave, onCancel, initialValues }) => {
+const AddressForm = ({ initialValues, onSave, onCancel, errorMessage }) => {
   const {
     register,
     handleSubmit,
@@ -111,6 +121,8 @@ const AddressForm = ({ onSave, onCancel, initialValues }) => {
 
   return (
     <FormSection>
+      {errorMessage && <div className="form-error">{errorMessage}</div>}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         <input
           type="text"
@@ -157,10 +169,10 @@ const AddressForm = ({ onSave, onCancel, initialValues }) => {
           <span className="error-message">{errors.zip.message}</span>
         )}
 
-        <label>
+        {/* <label>
           <input type="checkbox" {...register("isDefault")} /> Set as default
           address
-        </label>
+        </label> */}
 
         <div className="button-group">
           <button type="submit" className="save">
