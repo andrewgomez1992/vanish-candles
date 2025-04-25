@@ -152,7 +152,9 @@ const LoginPage = () => {
       if (err.response) {
         if (
           err.response.status === 401 &&
-          err.response.data.message?.includes("Your email is not verified")
+          err.response.data.message?.includes(
+            "Please verify your email before logging in."
+          )
         ) {
           setError("Your email is not verified.");
           setShowResend(true);
@@ -169,6 +171,9 @@ const LoginPage = () => {
 
   const handleResendVerification = async () => {
     setResendMessage("");
+    setError("");
+    setShowResend(false);
+
     try {
       const response = await axiosInstance.post("/users/resend-verification", {
         email,

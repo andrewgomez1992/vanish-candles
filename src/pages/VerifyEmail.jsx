@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axiosInstance from "../util/axiosConfig";
 
+// is token being pulled persistent?
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");

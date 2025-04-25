@@ -44,12 +44,22 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  useEffect(() => {
+    axiosInstance
+      .get("/users/current-user")
+      .then((res) => console.log("✅ Backend responded:", res))
+      .catch((err) => console.error("❌ Backend failed:", err));
+  }, []);
+
   const login = async (email, password) => {
+    console.log("Login button clicked with:", email, password);
     try {
       const response = await axiosInstance.post("/users/login", {
         email,
         password,
       });
+
+      console.log("response --->", response);
 
       const { token } = response.data;
       localStorage.setItem("token", token);

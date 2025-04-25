@@ -52,6 +52,7 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+  // updateCart should be a value passed to context
   return (
     <CartContext.Provider
       value={{ cart, totalQuantity, totalPrice, addToCart, removeFromCart }}

@@ -18,8 +18,8 @@ import ProtectedRoute from "./routes/ProtecedRoute";
 import VerifyEmail from "./pages/VerifyEmail";
 import OrderConfirmation from "./pages/OrderConfirmation";
 
-// const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
-const stripePromise = loadStripe("heyitsafakekey");
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+// const stripePromise = loadStripe("heyitsafakekey");
 
 const App = () => {
   return (
