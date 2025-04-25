@@ -8,6 +8,7 @@ const ListContainer = styled.div`
   flex-direction: column;
   gap: 20px;
 `;
+
 const AddButton = styled.button`
   padding: 10px 20px;
   background-color: #000;
@@ -15,8 +16,14 @@ const AddButton = styled.button`
   border: none;
   cursor: pointer;
   align-self: flex-start;
-  &:hover {
+
+  &:hover:not(:disabled) {
     background-color: #333;
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
   }
 `;
 
@@ -55,7 +62,6 @@ const AddressList = ({
 
   const handleSetDefault = async (id) => {
     try {
-      // delegate to parent’s onSetDefault prop
       await onSetDefault(id);
     } catch (err) {
       setFormError(err.message || JSON.stringify(err));
@@ -82,8 +88,14 @@ const AddressList = ({
         );
       })}
 
-      <AddButton type="button" onClick={() => openForm({})}>
-        Add New Address
+      <AddButton
+        type="button"
+        onClick={() => openForm({})}
+        disabled={addresses.length >= 3}
+      >
+        {addresses.length >= 3
+          ? "Please delete an address to add more"
+          : "Add New Address"}
       </AddButton>
 
       {editing !== null && (
