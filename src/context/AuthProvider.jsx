@@ -4,71 +4,72 @@ import axiosInstance from "../util/axiosConfig";
 import { AuthContext } from "./AuthContext";
 
 export const AuthProvider = ({ children }) => {
+  const [token, setToken] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [token, setToken] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
 
-  const parseJwt = (token) => {
+  const parseJwt = (t) => {
     try {
-      const decoded = JSON.parse(atob(token.split(".")[1]));
-      return decoded;
-    } catch (e) {
-      console.error("Failed to parse JWT:", e);
+      return JSON.parse(atob(t.split(".")[1]));
+    } catch {
       return null;
     }
   };
 
+  // 1️⃣ Load token once on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setToken(storedToken);
+    const stored = localStorage.getItem("token");
+    if (stored) {
+      setToken(stored);
       setIsLoggedIn(true);
     }
   }, []);
 
-  // 🔁 Update user info when token changes
+  // 2️⃣ When token changes decode & schedule auto-logout
   useEffect(() => {
     if (!token) return;
+    const decoded = parseJwt(token);
+    if (!decoded) return;
 
-    const decodedToken = parseJwt(token);
+    // update user info
+    if (decoded.email) setUserEmail(decoded.email);
+    setIsAdmin(decoded.role?.toLowerCase() === "admin");
 
-    if (decodedToken?.email) {
-      setUserEmail(decodedToken.email);
-    }
-
-    if (decodedToken?.role?.toLowerCase() === "admin") {
-      setIsAdmin(true);
-    } else {
-      setIsAdmin(false);
+    // schedule logout at exact token expiry
+    if (decoded.exp) {
+      const expiresAt = decoded.exp * 1000;
+      const msUntil = expiresAt - Date.now();
+      if (msUntil > 0) {
+        const timer = setTimeout(() => {
+          logout();
+          window.location.href = "/login";
+        }, msUntil);
+        return () => clearTimeout(timer);
+      } else {
+        // already expired
+        logout();
+      }
     }
   }, [token]);
 
+  // 3️⃣ Keep “current-user” fresh whenever token is valid
   useEffect(() => {
+    if (!token) return;
     axiosInstance
       .get("/users/current-user")
-      .then((res) => console.log("✅ Backend responded:", res))
-      .catch((err) => console.error("❌ Backend failed:", err));
-  }, []);
+      .then((res) => console.log("✅ current-user:", res.data))
+      .catch((err) => console.error("❌ current-user error:", err));
+  }, [token]);
 
   const login = async (email, password) => {
-    console.log("Login button clicked with:", email, password);
-    try {
-      const response = await axiosInstance.post("/users/login", {
-        email,
-        password,
-      });
-
-      console.log("response --->", response);
-
-      const { token } = response.data;
-      localStorage.setItem("token", token);
-      setToken(token);
-      setIsLoggedIn(true);
-    } catch (error) {
-      console.error("Login error:", error);
-      throw error;
-    }
+    const { data } = await axiosInstance.post("/users/login", {
+      email,
+      password,
+    });
+    localStorage.setItem("token", data.token);
+    setToken(data.token);
+    setIsLoggedIn(true);
   };
 
   const logout = () => {
