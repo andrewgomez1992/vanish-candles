@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useAuth } from "../hooks/useAuth";
 import { useAddresses } from "../hooks/useAddresses";
 import AddressList from "../components/addresses/AddressList";
+import Orders from "../components/Orders";
 
 const AccountContainer = styled.div`
   min-height: 100vh;
@@ -99,11 +100,18 @@ const AccountPage = () => {
           {activeTab === "overview" && (
             <>
               <h2>Welcome, {userEmail || "Guest"}!</h2>
-              <p>Use the sidebar to manage your profile and addresses.</p>
+              <p>
+                Use the sidebar to manage your profile, orders, and addresses.
+              </p>
             </>
           )}
 
-          {activeTab === "orders" && <h2>Order History</h2>}
+          {activeTab === "orders" && (
+            <>
+              <h2>Order History</h2>
+              <Orders userEmail={userEmail} />
+            </>
+          )}
 
           {activeTab === "addresses" && (
             <>
