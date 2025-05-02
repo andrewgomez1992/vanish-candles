@@ -17,7 +17,6 @@ const InventoryTable = styled.table`
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  min-width: 600px; /* Ensures that the table does not collapse too much */
 
   th,
   td {
