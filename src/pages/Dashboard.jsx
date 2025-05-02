@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useAuth } from "../hooks/useAuth"; // Import useAuth
+
 import ProductManagement from "../components/dashboard/ProductManagement";
 import OrderManagement from "../components/dashboard/OrderManagement";
 import UserManagement from "../components/dashboard/UserManagement";
 import InventoryManagement from "../components/dashboard/InventoryManagement";
-// import NotificationPanel from "../components/dashboard/NotificationPanel";
 
 const DashboardContainer = styled.div`
   min-height: 100vh;
@@ -43,6 +44,7 @@ const Sidebar = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   @media (max-width: 768px) {
     width: 100%;
+    height: 225px;
   }
 `;
 
@@ -76,6 +78,7 @@ const ContentArea = styled.div`
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("user-management");
+  const { firstName } = useAuth(); // Get firstName from the useAuth hook
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -83,7 +86,7 @@ const Dashboard = () => {
 
   return (
     <DashboardContainer>
-      <DashboardHeading>Admin Dashboard</DashboardHeading>
+      <DashboardHeading>Hey {firstName}!</DashboardHeading>
       <DashboardInner>
         <Sidebar>
           <SidebarList>
