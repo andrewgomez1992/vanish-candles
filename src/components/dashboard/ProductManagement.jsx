@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
 
+import ProductForm from "./ProductForm";
+
 const ProductManagementWrapper = styled.div`
   padding: 5px 20px 20px 20px;
   background-color: white;
@@ -29,9 +31,29 @@ const ProductTable = styled.table`
   }
 `;
 
+const AddProductButton = styled.button`
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: #45a049;
+  }
+`;
+
 const ProductManagement = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+
+  const handleAddProduct = () => {
+    setShowForm(true); // Show the form when the button is clicked
+  };
 
   useEffect(() => {
     // Fetch products from the API
@@ -55,6 +77,14 @@ const ProductManagement = () => {
 
   return (
     <ProductManagementWrapper>
+      {/* Add Product Button */}
+      <AddProductButton onClick={handleAddProduct}>
+        Add New Product
+      </AddProductButton>
+
+      {/* Show the Product Form if `showForm` is true */}
+      {showForm && <ProductForm setShowForm={setShowForm} />}
+
       <ProductTable>
         <thead>
           <tr>
