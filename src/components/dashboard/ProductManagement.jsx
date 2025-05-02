@@ -20,7 +20,6 @@ const ProductManagementWrapper = styled.div`
 const ProductTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
 
   th,
   td {
@@ -43,29 +42,6 @@ const ProductTable = styled.table`
       padding: 8px;
       font-size: 0.9rem;
     }
-  }
-`;
-
-const AddProductButton = styled.button`
-  padding: 8px 20px;
-  background-color: transparent;
-  color: #333;
-  border: 2px solid #333;
-  cursor: pointer;
-  margin-bottom: 20px;
-  font-size: 1rem;
-  border-radius: 5px;
-  transition: background-color 0.3s, color 0.3s;
-
-  &:hover {
-    background-color: #333;
-    color: white;
-  }
-
-  @media (max-width: 768px) {
-    width: auto;
-    font-size: 1rem;
-    padding: 8px 15px;
   }
 `;
 
@@ -106,7 +82,7 @@ const ActionButton = styled.button`
   }
 `;
 
-const ProductManagement = () => {
+const ProductManagement = ({ showForm, setShowForm }) => {
   const [products, setProducts] = useState([
     {
       id: "1",
@@ -150,12 +126,6 @@ const ProductManagement = () => {
     },
   ]);
 
-  const [showForm, setShowForm] = useState(false);
-
-  const handleAddProduct = () => {
-    setShowForm((prevState) => !prevState); // Toggle the form visibility
-  };
-
   const handleEditProduct = (id) => {
     console.log("Edit product with id:", id); // This will be your edit logic
   };
@@ -174,12 +144,7 @@ const ProductManagement = () => {
 
   return (
     <ProductManagementWrapper>
-      <AddProductButton onClick={handleAddProduct}>
-        Add Product
-      </AddProductButton>
-
       {showForm && <ProductForm setShowForm={setShowForm} />}
-
       <ProductTable>
         <thead>
           <tr>

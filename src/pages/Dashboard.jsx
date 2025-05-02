@@ -74,8 +74,37 @@ const ContentArea = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
 
+const HeaderWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
+const AddProductButton = styled.button`
+  padding: 8px 20px;
+  background-color: transparent;
+  color: #333;
+  border: 2px solid #333;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+
+  &:hover {
+    background-color: #333;
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+    padding: 8px 15px;
+  }
+`;
+
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("users");
+  const [showForm, setShowForm] = useState(false); // Managing the form visibility
   const { firstName } = useAuth(); // Get firstName from the useAuth hook
 
   useEffect(() => {
@@ -110,8 +139,16 @@ const Dashboard = () => {
 
           {activeTab === "products" && (
             <>
-              <h2>Products</h2>
-              <ProductManagement />
+              <HeaderWrapper>
+                <h2>Products</h2>
+                <AddProductButton onClick={() => setShowForm((prev) => !prev)}>
+                  Add Product
+                </AddProductButton>
+              </HeaderWrapper>
+              <ProductManagement
+                showForm={showForm}
+                setShowForm={setShowForm}
+              />
             </>
           )}
 

@@ -14,7 +14,7 @@ const OrderManagementWrapper = styled.div`
 const OrderTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 15px;
   th,
   td {
     padding: 10px;
