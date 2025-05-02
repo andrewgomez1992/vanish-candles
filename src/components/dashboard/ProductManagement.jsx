@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
-import candleImage from "../../assets/candleBackground2.webp";
+import candleImage from "../../assets/candlebackground2.webp";
 import Tooltip from "../common/Tooltip";
 import ProductForm from "./ProductForm";
 
