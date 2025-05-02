@@ -75,7 +75,7 @@ const ContentArea = styled.div`
 `;
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState("user-management");
+  const [activeTab, setActiveTab] = useState("users");
   const { firstName } = useAuth(); // Get firstName from the useAuth hook
 
   useEffect(() => {
@@ -88,12 +88,7 @@ const Dashboard = () => {
       <DashboardInner>
         <Sidebar>
           <SidebarList>
-            {[
-              "user-management",
-              "product-management",
-              "order-management",
-              "inventory-management",
-            ].map((tab) => (
+            {["users", "products", "orders", "inventory"].map((tab) => (
               <SidebarItem
                 key={tab}
                 className={activeTab === tab ? "active" : ""}
@@ -106,30 +101,30 @@ const Dashboard = () => {
         </Sidebar>
 
         <ContentArea>
-          {activeTab === "user-management" && (
+          {activeTab === "users" && (
             <>
-              <h2>User Management</h2>
+              <h2>Users</h2>
               <UserManagement />
             </>
           )}
 
-          {activeTab === "product-management" && (
+          {activeTab === "products" && (
             <>
-              <h2>Product Management</h2>
+              <h2>Products</h2>
               <ProductManagement />
             </>
           )}
 
-          {activeTab === "order-management" && (
+          {activeTab === "orders" && (
             <>
-              <h2>Order Management</h2>
+              <h2>Orders</h2>
               <OrderManagement />
             </>
           )}
 
-          {activeTab === "inventory-management" && (
+          {activeTab === "inventory" && (
             <>
-              <h2>Inventory Management</h2>
+              <h2>Inventory</h2>
               <InventoryManagement />
             </>
           )}
