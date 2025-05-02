@@ -3,7 +3,7 @@ import axios from "axios";
 import styled from "styled-components";
 
 const OrderManagementWrapper = styled.div`
-  padding: 20px;
+  padding: 5px 20px 20px 20px;
   background-color: white;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 `;
@@ -97,7 +97,6 @@ const OrderManagement = () => {
 
   return (
     <OrderManagementWrapper>
-      <h2>Manage Orders</h2>
       <OrderTable>
         <thead>
           <tr>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 
 const InventoryManagementWrapper = styled.div`
-  padding: 20px;
+  padding: 5px 20px 20px 20px;
   background-color: white;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
@@ -87,7 +87,6 @@ const InventoryManagement = () => {
 
   return (
     <InventoryManagementWrapper>
-      <h2>Inventory Management</h2>
       <InventoryTable>
         <thead>
           <tr>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 
 const UserManagementWrapper = styled.div`
-  padding: 20px;
+  padding: 5px 20px 20px 20px;
   background-color: white;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
@@ -87,7 +87,6 @@ const UserManagement = () => {
 
   return (
     <UserManagementWrapper>
-      <h2>User Management</h2>
       <UserTable>
         <thead>
           <tr>

@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 const ProductFormWrapper = styled.div`
   background-color: #fff;
-  padding: 20px;
+  padding: 5px 20px 20px 20px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
   border-radius: 8px;

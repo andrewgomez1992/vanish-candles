@@ -3,7 +3,7 @@ import axios from "axios";
 import styled from "styled-components";
 
 const ProductManagementWrapper = styled.div`
-  padding: 20px;
+  padding: 5px 20px 20px 20px;
   background-color: white;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 `;
@@ -55,7 +55,6 @@ const ProductManagement = () => {
 
   return (
     <ProductManagementWrapper>
-      <h2>Manage Products</h2>
       <ProductTable>
         <thead>
           <tr>
