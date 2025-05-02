@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
+  const [firstName, setFirstName] = useState(null);
 
   const parseJwt = (t) => {
     try {
@@ -32,8 +33,9 @@ export const AuthProvider = ({ children }) => {
     const decoded = parseJwt(token);
     if (!decoded) return;
 
-    // update user info
+    // Update user info including first name
     if (decoded.email) setUserEmail(decoded.email);
+    if (decoded.first_name) setFirstName(decoded.first_name);
     setIsAdmin(decoded.role?.toLowerCase() === "admin");
 
     // schedule logout at exact token expiry
@@ -58,7 +60,12 @@ export const AuthProvider = ({ children }) => {
     if (!token) return;
     axiosInstance
       .get("/users/current-user")
-      .then((res) => console.log("✅ current-user:", res.data))
+      .then((res) => {
+        console.log("res.data", res);
+        setFirstName(res.data.first_name);
+        setUserEmail(res.data.email);
+        console.log("✅ current-user:", res.data);
+      })
       .catch((err) => console.error("❌ current-user error:", err));
   }, [token]);
 
@@ -78,11 +85,22 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(false);
     setIsAdmin(false);
     setUserEmail(null);
+    setFirstName(null); // Clear first name on logout
   };
+
+  console.log("firstName", firstName);
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, isAdmin, token, userEmail, login, logout }}
+      value={{
+        isLoggedIn,
+        isAdmin,
+        token,
+        userEmail,
+        firstName,
+        login,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>
