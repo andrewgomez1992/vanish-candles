@@ -1,13 +1,20 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 import styled from "styled-components";
-
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import candleImage from "../../assets/candleBackground2.webp";
+import Tooltip from "../common/Tooltip";
 import ProductForm from "./ProductForm";
 
 const ProductManagementWrapper = styled.div`
-  padding: 5px 20px 20px 20px;
+  padding: 20px;
   background-color: white;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow-x: auto; // Added for mobile responsiveness
 `;
 
 const ProductTable = styled.table`
@@ -29,60 +36,148 @@ const ProductTable = styled.table`
   tr:hover {
     background-color: #f9f9f9;
   }
+
+  @media (max-width: 768px) {
+    th,
+    td {
+      padding: 8px;
+      font-size: 0.9rem;
+    }
+  }
 `;
 
 const AddProductButton = styled.button`
-  padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
+  padding: 8px 20px;
+  background-color: transparent;
+  color: #333;
+  border: 2px solid #333;
   cursor: pointer;
   margin-bottom: 20px;
   font-size: 1rem;
   border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
 
   &:hover {
-    background-color: #45a049;
+    background-color: #333;
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    width: auto;
+    font-size: 1rem;
+    padding: 8px 15px;
+  }
+`;
+
+const ActionButtonWrapper = styled.div`
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+`;
+
+const ActionButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 30px;
+  height: 30px;
+  min-width: auto;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+
+  &.edit {
+    border-color: #ff9800;
+  }
+
+  &.delete {
+    border-color: #f44336;
+  }
+
+  svg {
+    font-size: 18px;
   }
 `;
 
 const ProductManagement = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([
+    {
+      id: "1",
+      name: "Sandalwood Candle",
+      price: 30,
+      stock: 15,
+      description: "A soothing sandalwood fragrance",
+      image_url: candleImage,
+    },
+    {
+      id: "2",
+      name: "Lavender Candle",
+      price: 25,
+      stock: 5,
+      description: "Relaxing lavender aroma",
+      image_url: candleImage,
+    },
+    {
+      id: "3",
+      name: "Rose Candle",
+      price: 20,
+      stock: 8,
+      description: "Sweet and floral rose fragrance",
+      image_url: candleImage,
+    },
+    {
+      id: "4",
+      name: "Vanilla Candle",
+      price: 35,
+      stock: 3,
+      description: "Warm vanilla scent",
+      image_url: candleImage,
+    },
+    {
+      id: "5",
+      name: "Citrus Candle",
+      price: 40,
+      stock: 2,
+      description: "Zesty citrus fragrance",
+      image_url: candleImage,
+    },
+  ]);
+
   const [showForm, setShowForm] = useState(false);
 
   const handleAddProduct = () => {
-    setShowForm(true); // Show the form when the button is clicked
+    setShowForm((prevState) => !prevState); // Toggle the form visibility
   };
 
-  useEffect(() => {
-    // Fetch products from the API
-    axios
-      .get("/api/products/all") // Replace this with your correct API endpoint
-      .then((response) => {
-        // Ensure the response is an array
-        setProducts(Array.isArray(response.data) ? response.data : []);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching products:", error);
-        setLoading(false);
-        setProducts([]); // Set to empty array if fetch fails
-      });
-  }, []);
+  const handleEditProduct = (id) => {
+    console.log("Edit product with id:", id); // This will be your edit logic
+  };
 
-  if (loading) {
-    return <div>Loading products...</div>;
-  }
+  const handleDeleteProduct = (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+    if (confirmDelete) {
+      setProducts((prevState) =>
+        prevState.filter((product) => product.id !== id)
+      );
+      console.log("Product deleted:", id); // This will be your delete logic
+    }
+  };
 
   return (
     <ProductManagementWrapper>
-      {/* Add Product Button */}
       <AddProductButton onClick={handleAddProduct}>
-        Add New Product
+        Add Product
       </AddProductButton>
 
-      {/* Show the Product Form if `showForm` is true */}
       {showForm && <ProductForm setShowForm={setShowForm} />}
 
       <ProductTable>
@@ -92,6 +187,7 @@ const ProductManagement = () => {
             <th>Price</th>
             <th>Description</th>
             <th>Image</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -102,6 +198,27 @@ const ProductManagement = () => {
               <td>{product.description}</td>
               <td>
                 <img src={product.image_url} alt={product.name} width={50} />
+              </td>
+              <td>
+                <ActionButtonWrapper>
+                  <Tooltip tooltipText="Edit Product">
+                    <ActionButton
+                      className="edit"
+                      onClick={() => handleEditProduct(product.id)}
+                    >
+                      <FaEdit />
+                    </ActionButton>
+                  </Tooltip>
+
+                  <Tooltip tooltipText="Delete Product">
+                    <ActionButton
+                      className="delete"
+                      onClick={() => handleDeleteProduct(product.id)}
+                    >
+                      <FaTrashAlt />
+                    </ActionButton>
+                  </Tooltip>
+                </ActionButtonWrapper>
               </td>
             </tr>
           ))}

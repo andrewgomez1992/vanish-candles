@@ -1,11 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import styled from "styled-components";
+import { FaCaretDown } from "react-icons/fa";
+import Tooltip from "../common/Tooltip";
 
 const OrderManagementWrapper = styled.div`
   padding: 5px 20px 20px 20px;
   background-color: white;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
 `;
 
 const OrderTable = styled.table`
@@ -24,25 +27,75 @@ const OrderTable = styled.table`
   tr:hover {
     background-color: #f9f9f9;
   }
+
+  @media (max-width: 768px) {
+    table-layout: auto;
+    th,
+    td {
+      padding: 5px;
+    }
+  }
 `;
 
-const UpdateButton = styled.button`
-  padding: 5px 10px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
+const DropdownWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const DropdownButton = styled.button`
+  padding: 8px 12px;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 5px;
+
   &:hover {
-    background-color: #45a049;
+    background-color: #f0f0f0;
+  }
+`;
+
+const DropdownContent = styled.div`
+  display: ${({ open }) => (open ? "block" : "none")};
+  position: absolute;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  border-radius: 5px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+
+  & a {
+    color: #333;
+    padding: 10px;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid #ddd;
+  }
+
+  & a:hover {
+    background-color: #f5f5f5;
+  }
+
+  & a:last-child {
+    border-bottom: none;
   }
 `;
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [openDropdown, setOpenDropdown] = useState(null); // To track which dropdown is open
+
+  // Create a ref to track clicks outside the dropdown
+  const dropdownRef = useRef();
 
   useEffect(() => {
-    // Fetch orders from backend next
+    // Fetch orders from backend
     axios
       .get("/api/orders/all")
       .then(() => {
@@ -73,22 +126,61 @@ const OrderManagement = () => {
         console.error("Error fetching orders:", error);
         setLoading(false);
       });
+
+    // Close the dropdown if clicked outside
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpenDropdown(null); // Close dropdown
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handleStatusChange = (orderId, newStatus) => {
-    axios
-      .put(`/api/orders/status/${orderId}`, { status: newStatus })
-      .then(() => {
-        // Update the status locally after successful update
-        setOrders((prevOrders) =>
-          prevOrders.map((order) =>
-            order.id === orderId ? { ...order, status: newStatus } : order
-          )
-        );
-      })
-      .catch((error) => {
-        console.error("Error updating order status:", error);
-      });
+    // Simulate an API call to update the order status
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      )
+    );
+  };
+
+  const handleCancelOrder = (orderId) => {
+    // Simulate an API call to cancel the order
+    alert(`Order ${orderId} has been cancelled.`);
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.id === orderId ? { ...order, status: "Cancelled" } : order
+      )
+    );
+  };
+
+  const handleMarkAsProcessing = (orderId) => {
+    // Simulate an API call to mark as processing
+    alert(`Order ${orderId} is now marked as processing.`);
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.id === orderId ? { ...order, status: "Processing" } : order
+      )
+    );
+  };
+
+  const handleRefundOrder = (orderId) => {
+    // Simulate an API call for refund
+    alert(`Order ${orderId} has been refunded.`);
+  };
+
+  const handleViewOrderDetails = (orderId) => {
+    // Simulate opening order details
+    alert(`Viewing details for Order ${orderId}`);
+  };
+
+  const toggleDropdown = (orderId) => {
+    setOpenDropdown(openDropdown === orderId ? null : orderId);
   };
 
   if (loading) {
@@ -115,20 +207,53 @@ const OrderManagement = () => {
               <td>${order.totalPrice}</td>
               <td>{order.status}</td>
               <td>
-                {order.status !== "Shipped" && (
-                  <UpdateButton
-                    onClick={() => handleStatusChange(order.id, "Shipped")}
-                  >
-                    Mark as Shipped
-                  </UpdateButton>
-                )}
-                {order.status !== "Delivered" && (
-                  <UpdateButton
-                    onClick={() => handleStatusChange(order.id, "Delivered")}
-                  >
-                    Mark as Delivered
-                  </UpdateButton>
-                )}
+                <DropdownWrapper ref={dropdownRef}>
+                  <Tooltip tooltipText="Order Actions">
+                    <DropdownButton onClick={() => toggleDropdown(order.id)}>
+                      {order.status}
+                      <FaCaretDown />
+                    </DropdownButton>
+                  </Tooltip>
+                  <DropdownContent open={openDropdown === order.id}>
+                    {order.status !== "Shipped" && (
+                      <a
+                        onClick={() => handleStatusChange(order.id, "Shipped")}
+                      >
+                        Mark as Shipped
+                      </a>
+                    )}
+
+                    {order.status !== "Delivered" && (
+                      <a
+                        onClick={() =>
+                          handleStatusChange(order.id, "Delivered")
+                        }
+                      >
+                        Mark as Delivered
+                      </a>
+                    )}
+
+                    {order.status !== "Cancelled" && (
+                      <a onClick={() => handleCancelOrder(order.id)}>
+                        Cancel Order
+                      </a>
+                    )}
+
+                    {order.status !== "Processing" && (
+                      <a onClick={() => handleMarkAsProcessing(order.id)}>
+                        Mark as Processing
+                      </a>
+                    )}
+
+                    <a onClick={() => handleViewOrderDetails(order.id)}>
+                      View Details
+                    </a>
+
+                    <a onClick={() => handleRefundOrder(order.id)}>
+                      Refund Order
+                    </a>
+                  </DropdownContent>
+                </DropdownWrapper>
               </td>
             </tr>
           ))}
