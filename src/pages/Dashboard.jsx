@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import UserManagement from "../components/dashboard/UserManagement";
 // Other components that are needed
-// import ProductManagement from "../components/dashboard/ProductManagement";
+import ProductManagement from "../components/dashboard/ProductManagement";
 // import OrderManagement from "../components/dashboard/OrderManagement";
 // import InventoryManagement from "../components/dashboard/InventoryManagement";
 // import NotificationPanel from "../components/dashboard/NotificationPanel";
@@ -127,7 +127,7 @@ const Dashboard = () => {
             </a>
           </li>
           {/* Other sections commented out for now */}
-          {/* <li>
+          <li>
             <a
               href="#product-management"
               onClick={() => handleSelectComponent("product-management")}
@@ -138,7 +138,7 @@ const Dashboard = () => {
               Product Management
             </a>
           </li>
-          <li>
+          {/* <li>
             <a
               href="#order-management"
               onClick={() => handleSelectComponent("order-management")}
@@ -148,8 +148,8 @@ const Dashboard = () => {
             >
               Order Management
             </a>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <a
               href="#inventory-management"
               onClick={() => handleSelectComponent("inventory-management")}
@@ -177,20 +177,20 @@ const Dashboard = () => {
         )}
 
         {/* Other Sections (Commented for now) */}
-        {/* {selectedComponent === "product-management" && (
+        {selectedComponent === "product-management" && (
           <DashboardSection id="product-management">
             <SectionHeading>Product Management</SectionHeading>
             <ProductManagement />
           </DashboardSection>
         )}
 
-        {selectedComponent === "order-management" && (
+        {/* {selectedComponent === "order-management" && (
           <DashboardSection id="order-management">
             <SectionHeading>Order Management</SectionHeading>
             <OrderManagement />
           </DashboardSection>
-        )}
-
+        )} */}
+        {/* 
         {selectedComponent === "inventory-management" && (
           <DashboardSection id="inventory-management">
             <SectionHeading>Inventory Management</SectionHeading>
