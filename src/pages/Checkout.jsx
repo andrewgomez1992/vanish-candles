@@ -234,7 +234,7 @@ const ShippingLabel = styled.span`
 const Checkout = () => {
   const stripe = useStripe();
   const elements = useElements();
-  const { cart, totalPrice } = useCart();
+  const { cart, totalPrice, clearCart } = useCart();
   const { userEmail } = useContext(AuthContext);
   const navigate = useNavigate();
   const [addressInfo, setAddressInfo] = useState({});
@@ -248,8 +248,6 @@ const Checkout = () => {
   const [success, setSuccess] = useState(false);
   const [cardHolderName, setCardHolderName] = useState("");
   const [selectedShippingMethod, setSelectedShippingMethod] = useState({});
-
-  console.log("addressInfo", addressInfo);
 
   const dummyShippingMethods = [
     {
@@ -369,6 +367,9 @@ const Checkout = () => {
         setLoading(false);
         return;
       }
+
+      console.log("Clearing cart after payment...");
+      clearCart();
 
       setSuccess(true);
       setTimeout(() => navigate("/order-confirmation"), 3000);
