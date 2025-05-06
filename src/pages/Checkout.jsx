@@ -238,6 +238,7 @@ const Checkout = () => {
   const { userEmail } = useContext(AuthContext);
   const navigate = useNavigate();
   const [addressInfo, setAddressInfo] = useState({});
+  const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [addressOpen, setAddressOpen] = useState(false);
   const [shippingOpen, setShippingOpen] = useState(false);
@@ -279,35 +280,31 @@ const Checkout = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const data = await res.json();
-        console.log("data", data);
-
         if (data?.length > 0) {
-          // Find the address with isDefault: true
           const defaultAddress = data.find((address) => address.isDefault);
-
           if (defaultAddress) {
-            setAddressInfo(defaultAddress); // Set the default address
-            setSelectedAddressId(defaultAddress.id); // Set the default address id
+            setAddressInfo(defaultAddress);
+            setSelectedAddressId(defaultAddress.id);
           } else {
-            // If no default address, select the first one
             setAddressInfo(data[0]);
             setSelectedAddressId(data[0].id);
           }
+          setAddresses(data);
         }
       } catch (err) {
         console.error("Error fetching addresses:", err);
       }
     };
-
     fetchAddresses();
   }, []);
 
   const handleSelectSavedAddress = (e) => {
     const chosenId = parseInt(e.target.value, 10);
     setSelectedAddressId(chosenId);
-    const chosenAddress = addressInfo.find((addr) => addr.id === chosenId);
+
+    const chosenAddress = addresses.find((addr) => addr.id === chosenId);
     if (chosenAddress) {
-      setAddressInfo(chosenAddress);
+      setAddressInfo(chosenAddress); // Update addressInfo state to fill the form
     }
   };
 
@@ -383,7 +380,9 @@ const Checkout = () => {
   };
 
   const shippingCost = selectedShippingMethod?.cost || 0;
-  // const grandTotal = totalPrice + shippingCost;
+  const grandTotal = totalPrice + shippingCost;
+
+  console.log("grandTotal", grandTotal);
 
   return (
     <CheckoutPageContainer>
@@ -404,81 +403,91 @@ const Checkout = () => {
                     value={selectedAddressId}
                     onChange={handleSelectSavedAddress}
                   >
-                    {/* {addressInfo?.map((addr) => (
-                      <option key={addr.id} value={addr.id}>
-                        {addr.label}
-                      </option>
-                    ))} */}
+                    {addresses.length > 0 ? (
+                      addresses.map((addr) => (
+                        <option key={addr.id} value={addr.id}>
+                          {addr.first_name} {addr.last_name} - {addr.street}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>No saved addresses</option>
+                    )}
                   </select>
                 </FormGroup>
-
                 <FormGroup>
                   <label>First Name</label>
                   <input
                     name="firstName"
-                    value={addressInfo.firstName}
+                    value={addressInfo.first_name || ""}
                     onChange={handleAddressChange}
                     required
                   />
                 </FormGroup>
+
                 <FormGroup>
                   <label>Last Name</label>
                   <input
                     name="lastName"
-                    value={addressInfo.lastName}
+                    value={addressInfo.last_name || ""}
                     onChange={handleAddressChange}
                     required
                   />
                 </FormGroup>
+
                 <FormGroup>
                   <label>Address Line 1</label>
                   <input
                     name="addressLine1"
-                    value={addressInfo.addressLine1}
+                    value={addressInfo.street || ""}
                     onChange={handleAddressChange}
                     required
                   />
                 </FormGroup>
+
                 <FormGroup>
                   <label>Address Line 2 (Optional)</label>
                   <input
                     name="addressLine2"
-                    value={addressInfo.addressLine2}
+                    value={addressInfo.addressLine2 || ""}
                     onChange={handleAddressChange}
                   />
                 </FormGroup>
+
                 <FormGroup>
                   <label>City</label>
                   <input
                     name="city"
-                    value={addressInfo.city}
+                    value={addressInfo.city || ""}
                     onChange={handleAddressChange}
                     required
                   />
                 </FormGroup>
+
                 <FormGroup>
                   <label>State</label>
                   <input
                     name="state"
-                    value={addressInfo.state}
+                    value={addressInfo.state || ""}
                     onChange={handleAddressChange}
                     required
                   />
                 </FormGroup>
+
                 <FormGroup>
                   <label>ZIP / Postal Code</label>
                   <input
                     name="zip"
-                    value={addressInfo.zip}
+                    value={addressInfo.zip || ""}
                     onChange={handleAddressChange}
                     required
                   />
                 </FormGroup>
+
                 <FormGroup>
                   <label>Country</label>
                   <input
                     name="country"
-                    value={addressInfo.country}
+                    value={addressInfo.country || ""}
                     onChange={handleAddressChange}
                     required
                   />
@@ -530,7 +539,7 @@ const Checkout = () => {
             </SectionContainer>
 
             <PayButton type="submit" disabled={!stripe || loading}>
-              {/* {loading ? "Processing..." : `Pay $${grandTotal.toFixed(2)}`} */}
+              {/* {loading ? "Processing..." : `Pay $${grandTotalFormatted}`} */}
             </PayButton>
           </form>
 
