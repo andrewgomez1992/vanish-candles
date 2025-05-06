@@ -379,8 +379,9 @@ const Checkout = () => {
     setLoading(false);
   };
 
+  const numericTotalPrice = parseFloat(totalPrice) || 0; // Ensure it's a number, default to 0 if invalid
   const shippingCost = selectedShippingMethod?.cost || 0;
-  const grandTotal = totalPrice + shippingCost;
+  const grandTotal = numericTotalPrice + shippingCost;
 
   console.log("grandTotal", grandTotal);
 
@@ -539,7 +540,7 @@ const Checkout = () => {
             </SectionContainer>
 
             <PayButton type="submit" disabled={!stripe || loading}>
-              {/* {loading ? "Processing..." : `Pay $${grandTotalFormatted}`} */}
+              {loading ? "Processing..." : `Pay $${grandTotal}`}
             </PayButton>
           </form>
 
@@ -575,7 +576,7 @@ const Checkout = () => {
 
         <OrderSummaryItem>
           <span>Subtotal</span>
-          {/* <span>${totalPrice.toFixed(2)}</span> */}
+          <span>${numericTotalPrice.toFixed(2)}</span>
         </OrderSummaryItem>
         <OrderSummaryItem>
           <ShippingLabel>
@@ -591,7 +592,7 @@ const Checkout = () => {
         <Divider />
         <OrderSummaryItem>
           <strong>Total</strong>
-          {/* <strong>${grandTotal.toFixed(2)}</strong> */}
+          <strong>${grandTotal.toFixed(2)}</strong>
         </OrderSummaryItem>
       </RightColumn>
     </CheckoutPageContainer>
