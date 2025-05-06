@@ -16,24 +16,26 @@ export const CartProvider = ({ children }) => {
 
   // Update total quantity and price whenever cart changes
   useEffect(() => {
-    // If cart is empty or not yet initialized, don't process further
-    if (!cart || cart.length === 0) return;
+    if (cart && cart.length > 0) {
+      const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+      setTotalQuantity(total);
 
-    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-    setTotalQuantity(total);
+      const totalPrice = cart.reduce((sum, item) => {
+        const price =
+          typeof item.price === "number"
+            ? item.price
+            : parseFloat(item.price.replace("$", "").trim());
+        return sum + price * item.quantity;
+      }, 0);
+      setTotalPrice(totalPrice.toFixed(2));
 
-    const totalPrice = cart.reduce((sum, item) => {
-      const price =
-        typeof item.price === "number"
-          ? item.price
-          : parseFloat(item.price.replace("$", "").trim());
-      return sum + price * item.quantity;
-    }, 0);
-
-    setTotalPrice(totalPrice.toFixed(2));
-
-    // Save the updated cart to localStorage
-    localStorage.setItem("cart", JSON.stringify(cart));
+      // Save the updated cart to localStorage
+      localStorage.setItem("cart", JSON.stringify(cart));
+    } else {
+      setTotalQuantity(0);
+      setTotalPrice(0);
+      localStorage.removeItem("cart"); // Remove from localStorage when cart is empty
+    }
   }, [cart]);
 
   const addToCart = (item) => {
@@ -79,9 +81,21 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem("cart");
+  };
+
   return (
     <CartContext.Provider
-      value={{ cart, totalQuantity, totalPrice, addToCart, removeFromCart }}
+      value={{
+        cart,
+        totalQuantity,
+        totalPrice,
+        addToCart,
+        removeFromCart,
+        clearCart,
+      }}
     >
       {children}
     </CartContext.Provider>
