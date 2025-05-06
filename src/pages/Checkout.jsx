@@ -1,11 +1,11 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useCart } from "../context/useCart";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { AuthContext } from "../context/AuthContext";
 import { FaChevronDown, FaChevronUp, FaQuestionCircle } from "react-icons/fa";
-import candlePlacerholder from "../assets/candlebackground.webp";
+import candlePlaceholder from "../assets/candlebackground.webp";
 import ShippingPolicyModal from "../components/modals/ShippingPolicyModal";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -15,7 +15,7 @@ const CheckoutPageContainer = styled.div`
   margin-bottom: 50px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; /* Center columns horizontally */
+  justify-content: center;
   align-items: flex-start;
   gap: 30px;
   padding: 0 20px;
@@ -31,7 +31,6 @@ const LeftColumn = styled.div`
   background-color: #fff;
   padding: 30px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -62,14 +61,12 @@ const PageHeading = styled.h1`
   text-align: center;
 `;
 
-/* Section Container with a bottom border (gray underline) */
 const SectionContainer = styled.div`
   border-bottom: 1px solid #ddd;
   margin-bottom: 20px;
   padding-bottom: 20px;
 `;
 
-/* Clickable header with arrow icon that flips */
 const SectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -101,26 +98,19 @@ const FormGroup = styled.div`
   input,
   select {
     width: 100%;
-    /* KEY: Make sure padding doesn't increase the total width */
     box-sizing: border-box;
     padding: 10px;
     border: 1px solid #ccc;
     font-size: 0.95rem;
   }
 
-  /* Customize the SELECT arrow */
   select {
-    -webkit-appearance: none; /* Remove default arrow (Safari/Chrome) */
-    -moz-appearance: none; /* Remove default arrow (Firefox) */
+    -webkit-appearance: none;
+    -moz-appearance: none;
     appearance: none;
-
-    /* Add right-side padding so text doesn't overlap custom arrow */
     padding-right: 1rem;
-
-    /* Use a base64-encoded SVG arrow or your own image */
-    background: url("data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjN2I3Yjc4IiB2aWV3Qm94PSIwIDAgMTIgMTIiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHRpdGxlPkFycm93PC90aXRsZT48cG9seWdvbiBwb2ludHM9IjYgOSAxIDMgMTEgMyIvPjwvc3ZnPg==")
-      no-repeat 97% center; /* arrow at 97% from the left, adjust to taste */
-    background-size: 14px; /* arrow icon size */
+    background: url("data:image/svg+xml;base64,...") no-repeat 97% center;
+    background-size: 14px;
     cursor: pointer;
   }
 `;
@@ -236,62 +226,10 @@ const InfoIcon = styled(FaQuestionCircle)`
 `;
 
 const ShippingLabel = styled.span`
-  display: inline-flex; /* keeps them in one line */
-  align-items: center; /* vertically center text & icon */
-  gap: 4px; /* small space between text & icon */
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 `;
-
-// ---------- Dummy Data for Addresses & Shipping Methods ----------
-
-const dummyAddresses = [
-  {
-    id: 1,
-    label: "Home Address",
-    firstName: "Andrew",
-    lastName: "Gomez",
-    addressLine1: "2050 Esther Drive",
-    addressLine2: "",
-    city: "Modesto",
-    state: "CA",
-    zip: "95350",
-    country: "US",
-  },
-  {
-    id: 2,
-    label: "Work Address",
-    firstName: "Andrew",
-    lastName: "Gomez",
-    addressLine1: "1234 Office Blvd",
-    addressLine2: "Suite 101",
-    city: "San Francisco",
-    state: "CA",
-    zip: "94103",
-    country: "US",
-  },
-];
-
-const dummyShippingMethods = [
-  {
-    id: "ground",
-    name: "UPS® Ground",
-    cost: 14.95,
-    estimate: "4 business days",
-  },
-  {
-    id: "2day",
-    name: "UPS 2nd Day Air®",
-    cost: 24.95,
-    estimate: "2 business days",
-  },
-  {
-    id: "overnight",
-    name: "UPS Next Day Air®",
-    cost: 34.95,
-    estimate: "1 business day",
-  },
-];
-
-// ---------- Component ----------
 
 const Checkout = () => {
   const stripe = useStripe();
@@ -299,22 +237,75 @@ const Checkout = () => {
   const { cart, totalPrice } = useCart();
   const { userEmail } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  // Convert totalPrice to a valid number
-  const numericTotalPrice = parseFloat(totalPrice) || 0;
-
-  // ============ Address State ============
-  const [selectedAddressId, setSelectedAddressId] = useState(
-    dummyAddresses[0].id
-  );
-  const [addressInfo, setAddressInfo] = useState(dummyAddresses[0]);
-  // Accordion open/close
+  const [addressInfo, setAddressInfo] = useState({});
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [addressOpen, setAddressOpen] = useState(false);
+  const [shippingOpen, setShippingOpen] = useState(false);
+  const [showPolicy, setShowPolicy] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [cardHolderName, setCardHolderName] = useState("");
+  const [selectedShippingMethod, setSelectedShippingMethod] = useState({});
+
+  console.log("addressInfo", addressInfo);
+
+  const dummyShippingMethods = [
+    {
+      id: "ground",
+      name: "UPS® Ground",
+      cost: 14.95,
+      estimate: "4 business days",
+    },
+    {
+      id: "2day",
+      name: "UPS 2nd Day Air®",
+      cost: 24.95,
+      estimate: "2 business days",
+    },
+    {
+      id: "overnight",
+      name: "UPS Next Day Air®",
+      cost: 34.95,
+      estimate: "1 business day",
+    },
+  ];
+
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/users/addresses`, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        const data = await res.json();
+        console.log("data", data);
+
+        if (data?.length > 0) {
+          // Find the address with isDefault: true
+          const defaultAddress = data.find((address) => address.isDefault);
+
+          if (defaultAddress) {
+            setAddressInfo(defaultAddress); // Set the default address
+            setSelectedAddressId(defaultAddress.id); // Set the default address id
+          } else {
+            // If no default address, select the first one
+            setAddressInfo(data[0]);
+            setSelectedAddressId(data[0].id);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching addresses:", err);
+      }
+    };
+
+    fetchAddresses();
+  }, []);
 
   const handleSelectSavedAddress = (e) => {
     const chosenId = parseInt(e.target.value, 10);
     setSelectedAddressId(chosenId);
-    const chosenAddress = dummyAddresses.find((addr) => addr.id === chosenId);
+    const chosenAddress = addressInfo.find((addr) => addr.id === chosenId);
     if (chosenAddress) {
       setAddressInfo(chosenAddress);
     }
@@ -325,29 +316,9 @@ const Checkout = () => {
     setAddressInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ============ Shipping Method State ============
-  const [selectedShippingMethod, setSelectedShippingMethod] = useState(
-    dummyShippingMethods[0]
-  );
-  // Accordion open/close
-  const [shippingOpen, setShippingOpen] = useState(false);
-  const [showPolicy, setShowPolicy] = useState(false);
-
   const handleShippingMethodChange = (method) => {
     setSelectedShippingMethod(method);
   };
-
-  // Calculate shipping cost
-  const shippingCost = selectedShippingMethod?.cost || 0;
-  const grandTotal = numericTotalPrice + shippingCost;
-
-  // ============ Payment Handling ============
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-
-  // Name on Card (best practice)
-  const [cardHolderName, setCardHolderName] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -361,22 +332,18 @@ const Checkout = () => {
     }
 
     try {
-      // Prepare your items array
-      const formattedItems = cart?.map((item) => ({
+      const formattedItems = cart.map((item) => ({
         id: item.id,
         quantity: item.quantity,
       }));
 
-      // TODO: send addressInfo, shippingMethod, cardHolderName to your backend.
-
-      // Create payment intent on server
       const response = await fetch(
         `${API_BASE_URL}/stripe/create-payment-intent`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            amount: Math.round(numericTotalPrice * 100),
+            amount: Math.round(totalPrice * 100),
             customerEmail: userEmail,
             items: formattedItems,
           }),
@@ -384,19 +351,17 @@ const Checkout = () => {
       );
 
       const data = await response.json();
-
       if (!data.client_secret) {
         throw new Error("Failed to get client secret.");
       }
 
-      // Confirm payment with Stripe
       const { error: stripeError } = await stripe.confirmCardPayment(
         data.client_secret,
         {
           payment_method: {
             card: elements.getElement(CardElement),
             billing_details: {
-              name: cardHolderName, // attach card holder name
+              name: cardHolderName,
             },
           },
         }
@@ -411,30 +376,27 @@ const Checkout = () => {
       setSuccess(true);
       setTimeout(() => navigate("/order-confirmation"), 3000);
     } catch (err) {
-      if (err?.response?.status === 405) {
-        setError("Sorry the backend isn't currently live :(");
-      } else {
-        setError(err.message || "Payment failed. Please try again.");
-      }
+      setError(err.message || "Payment failed. Please try again.");
     }
 
     setLoading(false);
   };
 
+  const shippingCost = selectedShippingMethod?.cost || 0;
+  // const grandTotal = totalPrice + shippingCost;
+
   return (
     <CheckoutPageContainer>
       <LeftColumn>
         <PageHeading>Secure Checkout</PageHeading>
-
         <FormContainer>
           <form onSubmit={handleSubmit}>
-            {/* ADDRESS SECTION */}
+            {/* Address Section */}
             <SectionContainer>
               <SectionHeader onClick={() => setAddressOpen(!addressOpen)}>
                 <SectionTitle>Ship To</SectionTitle>
                 {addressOpen ? <FaChevronUp /> : <FaChevronDown />}
               </SectionHeader>
-
               <SectionContent isOpen={addressOpen}>
                 <FormGroup>
                   <label>Choose a saved address</label>
@@ -442,11 +404,11 @@ const Checkout = () => {
                     value={selectedAddressId}
                     onChange={handleSelectSavedAddress}
                   >
-                    {dummyAddresses?.map((addr) => (
+                    {/* {addressInfo?.map((addr) => (
                       <option key={addr.id} value={addr.id}>
                         {addr.label}
                       </option>
-                    ))}
+                    ))} */}
                   </select>
                 </FormGroup>
 
@@ -562,17 +524,13 @@ const Checkout = () => {
                 />
               </FormGroup>
 
-              <p style={{ margin: "10px 0" }}>
-                Billing Email: <strong>{userEmail || "Not logged in"}</strong>
-              </p>
-
               <StyledCardElementContainer>
                 <CardElement />
               </StyledCardElementContainer>
             </SectionContainer>
 
             <PayButton type="submit" disabled={!stripe || loading}>
-              {loading ? "Processing..." : `Pay $${grandTotal.toFixed(2)}`}
+              {/* {loading ? "Processing..." : `Pay $${grandTotal.toFixed(2)}`} */}
             </PayButton>
           </form>
 
@@ -583,13 +541,12 @@ const Checkout = () => {
         </FormContainer>
       </LeftColumn>
 
-      {/* RIGHT COLUMN: ORDER SUMMARY */}
       <RightColumn>
         <SectionTitle>Order Summary</SectionTitle>
-
+        {/* List Cart Items */}
         {cart?.map((item) => (
           <CartItemContainer key={item.id}>
-            <CartItemImage src={candlePlacerholder} alt={item.name} />
+            <CartItemImage src={candlePlaceholder} alt={item.name} />
             <CartItemDetails>
               <span className="item-name">{item.name}</span>
               <span className="item-quantity">
@@ -600,7 +557,6 @@ const Checkout = () => {
         ))}
 
         <Divider />
-
         <FormGroup>
           <label>Discount code or gift card</label>
           <input placeholder="Enter code" />
@@ -610,7 +566,7 @@ const Checkout = () => {
 
         <OrderSummaryItem>
           <span>Subtotal</span>
-          <span>${numericTotalPrice.toFixed(2)}</span>
+          {/* <span>${totalPrice.toFixed(2)}</span> */}
         </OrderSummaryItem>
         <OrderSummaryItem>
           <ShippingLabel>
@@ -626,7 +582,7 @@ const Checkout = () => {
         <Divider />
         <OrderSummaryItem>
           <strong>Total</strong>
-          <strong>${grandTotal.toFixed(2)}</strong>
+          {/* <strong>${grandTotal.toFixed(2)}</strong> */}
         </OrderSummaryItem>
       </RightColumn>
     </CheckoutPageContainer>
