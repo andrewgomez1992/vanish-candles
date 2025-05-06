@@ -55,13 +55,27 @@ export const CartProvider = ({ children }) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((cartItem) => cartItem.id === id);
       if (existingItem.quantity > 1) {
-        return prevCart?.map((cartItem) =>
+        const updatedCart = prevCart.map((cartItem) =>
           cartItem.id === id
             ? { ...cartItem, quantity: cartItem.quantity - 1 }
             : cartItem
         );
+        // Save the updated cart to localStorage
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+        return updatedCart;
       }
-      return prevCart.filter((cartItem) => cartItem.id !== id);
+
+      // Remove the item from the cart entirely
+      const updatedCart = prevCart.filter((cartItem) => cartItem.id !== id);
+
+      // Clear localStorage if the cart is empty
+      if (updatedCart.length === 0) {
+        localStorage.removeItem("cart");
+      } else {
+        // Save the updated cart to localStorage if it's not empty
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+      }
+      return updatedCart;
     });
   };
 
