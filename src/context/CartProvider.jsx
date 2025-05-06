@@ -7,8 +7,19 @@ export const CartProvider = ({ children }) => {
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
 
-  // ✅ Update total quantity and price whenever cart changes
   useEffect(() => {
+    const storedCart = localStorage.getItem("cart");
+    console.log("storedCart", storedCart);
+    if (storedCart) {
+      setCart(JSON.parse(storedCart)); // Parse the JSON string back to an array
+    }
+  }, []);
+
+  // Update total quantity and price whenever cart changes
+  useEffect(() => {
+    // If cart is empty or not yet initialized, don't process further
+    if (!cart || cart.length === 0) return;
+
     const total = cart.reduce((sum, item) => sum + item.quantity, 0);
     setTotalQuantity(total);
 
@@ -21,6 +32,9 @@ export const CartProvider = ({ children }) => {
     }, 0);
 
     setTotalPrice(totalPrice.toFixed(2));
+
+    // Save the updated cart to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (item) => {
@@ -52,7 +66,6 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  // updateCart should be a value passed to context
   return (
     <CartContext.Provider
       value={{ cart, totalQuantity, totalPrice, addToCart, removeFromCart }}
@@ -62,7 +75,6 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-// ✅ Add PropTypes Validation
 CartProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
