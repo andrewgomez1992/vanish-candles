@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
+import Confetti from "react-confetti";
 import styled from "styled-components";
+import { useWindowSize } from "react-use";
 
 const ConfirmationWrapper = styled.div`
   max-width: 500px;
@@ -60,9 +62,11 @@ const BackButton = styled.button`
 // Track my order button could be implemented after order confirmation
 const OrderConfirmation = () => {
   const navigate = useNavigate();
+  const { width, height } = useWindowSize();
 
   return (
     <ConfirmationWrapper>
+      <Confetti width={width} height={height} recycle={false} />
       <SuccessIcon>
         <svg
           xmlns="http://www.w3.org/2000/svg"

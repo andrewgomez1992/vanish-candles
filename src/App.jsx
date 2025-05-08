@@ -17,6 +17,7 @@ import { CartProvider } from "./context/CartProvider";
 import ProtectedRoute from "./routes/ProtecedRoute";
 import VerifyEmail from "./pages/VerifyEmail";
 import OrderConfirmation from "./pages/OrderConfirmation";
+import ScrollToTop from "./util/scrollToTop";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 // const stripePromise = loadStripe("heyitsafakekey");
@@ -25,6 +26,7 @@ const App = () => {
   return (
     <CartProvider>
       <Router>
+        <ScrollToTop />
         <Navbar />
         {/* ✅ Wrap Routes with Elements to make Stripe available */}
         <Elements stripe={stripePromise}>
