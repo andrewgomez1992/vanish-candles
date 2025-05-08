@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useAuth } from "../hooks/useAuth";
 import { useAddresses } from "../hooks/useAddresses";
 import AddressList from "../components/addresses/AddressList";
-import Orders from "../components/Orders";
+import Orders from "../components/orders/Orders";
 
 const AccountContainer = styled.div`
   min-height: 100vh;

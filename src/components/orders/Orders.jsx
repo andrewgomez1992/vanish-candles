@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import axios from "axios";
-import candleImage1 from "../assets/candlebackground2.webp";
+import candleImage1 from "../../assets/candlebackground2.webp";
+import TrackOrderButton from "./TrackOrderButton";
+import RefundButton from "./Refund";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -65,6 +67,12 @@ const NoOrders = styled.p`
   font-style: italic;
   color: #666;
   text-align: center;
+`;
+
+const Controls = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
 `;
 
 const Orders = ({ userEmail }) => {
@@ -131,6 +139,10 @@ const Orders = ({ userEmail }) => {
                 </OrderItem>
               ))}
             </div>
+            <Controls>
+              <TrackOrderButton orderId={order.id} />
+              <RefundButton orderId={order.id} />
+            </Controls>
           </AccordionContent>
         </AccordionItem>
       ))}
