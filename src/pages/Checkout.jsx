@@ -2,6 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useCart } from "../context/useCart";
 import { useNavigate } from "react-router-dom";
+import * as yup from "yup";
 import styled from "styled-components";
 import { AuthContext } from "../context/AuthContext";
 import { FaChevronDown, FaChevronUp, FaQuestionCircle } from "react-icons/fa";
@@ -231,6 +232,18 @@ const ShippingLabel = styled.span`
   gap: 4px;
 `;
 
+const checkoutSchema = yup.object().shape({
+  first_name: yup.string().required("First name is required."),
+  last_name: yup.string().required("Last name is required."),
+  street: yup.string().required("Address line 1 is required."),
+  city: yup.string().required("City is required."),
+  state: yup.string().required("State is required."),
+  zip: yup.string().required("ZIP / Postal Code is required."),
+  country: yup.string().required("Country is required."),
+  shippingMethodId: yup.string().required("Please select a shipping method."),
+  cardHolderName: yup.string().required("Name on card is required."),
+});
+
 const Checkout = () => {
   const stripe = useStripe();
   const elements = useElements();
@@ -245,6 +258,7 @@ const Checkout = () => {
   const [showPolicy, setShowPolicy] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [success, setSuccess] = useState(false);
   const [cardHolderName, setCardHolderName] = useState("");
   const [selectedShippingMethod, setSelectedShippingMethod] = useState({});
@@ -319,6 +333,14 @@ const Checkout = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccess(false);
+    setFieldErrors({});
+
+    const payload = {
+      ...addressInfo,
+      shippingMethodId: selectedShippingMethod.id,
+      cardHolderName,
+    };
 
     if (!stripe || !elements) {
       setError("Stripe is not properly initialized.");
@@ -327,6 +349,8 @@ const Checkout = () => {
     }
 
     try {
+      await checkoutSchema.validate(payload, { abortEarly: false });
+
       const formattedItems = cart.map((item) => ({
         id: item.id,
         quantity: item.quantity,
@@ -374,9 +398,20 @@ const Checkout = () => {
       setSuccess(true);
       setTimeout(() => navigate("/order-confirmation"), 3000);
     } catch (err) {
-      setError(err.message || "Payment failed. Please try again.");
+      if (err.name === "ValidationError") {
+        // map Yup errors to fieldErrors
+        const errs = {};
+        err.inner.forEach((e) => {
+          errs[e.path] = e.message;
+        });
+        setFieldErrors(errs);
+        setError("Please fix the errors above.");
+      } else {
+        setError(err.message || "Payment failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
-
     setLoading(false);
   };
 
@@ -419,33 +454,36 @@ const Checkout = () => {
                 <FormGroup>
                   <label>First Name</label>
                   <input
-                    name="firstName"
+                    name="first_name"
                     value={addressInfo.first_name || ""}
                     onChange={handleAddressChange}
-                    required
                   />
+                  {fieldErrors.first_name && (
+                    <ErrorMessage>{fieldErrors.first_name}</ErrorMessage>
+                  )}
                 </FormGroup>
-
                 <FormGroup>
                   <label>Last Name</label>
                   <input
-                    name="lastName"
+                    name="last_name"
                     value={addressInfo.last_name || ""}
                     onChange={handleAddressChange}
-                    required
                   />
+                  {fieldErrors.last_name && (
+                    <ErrorMessage>{fieldErrors.last_name}</ErrorMessage>
+                  )}
                 </FormGroup>
-
                 <FormGroup>
                   <label>Address Line 1</label>
                   <input
-                    name="addressLine1"
+                    name="street"
                     value={addressInfo.street || ""}
                     onChange={handleAddressChange}
-                    required
                   />
+                  {fieldErrors.street && (
+                    <ErrorMessage>{fieldErrors.street}</ErrorMessage>
+                  )}
                 </FormGroup>
-
                 <FormGroup>
                   <label>Address Line 2 (Optional)</label>
                   <input
@@ -453,46 +491,53 @@ const Checkout = () => {
                     value={addressInfo.addressLine2 || ""}
                     onChange={handleAddressChange}
                   />
+                  {fieldErrors.addressLine2 && (
+                    <ErrorMessage>{fieldErrors.addressLine2}</ErrorMessage>
+                  )}
                 </FormGroup>
-
                 <FormGroup>
                   <label>City</label>
                   <input
                     name="city"
                     value={addressInfo.city || ""}
                     onChange={handleAddressChange}
-                    required
                   />
+                  {fieldErrors.city && (
+                    <ErrorMessage>{fieldErrors.city}</ErrorMessage>
+                  )}
                 </FormGroup>
-
                 <FormGroup>
                   <label>State</label>
                   <input
                     name="state"
                     value={addressInfo.state || ""}
                     onChange={handleAddressChange}
-                    required
                   />
+                  {fieldErrors.state && (
+                    <ErrorMessage>{fieldErrors.state}</ErrorMessage>
+                  )}
                 </FormGroup>
-
                 <FormGroup>
                   <label>ZIP / Postal Code</label>
                   <input
                     name="zip"
                     value={addressInfo.zip || ""}
                     onChange={handleAddressChange}
-                    required
                   />
+                  {fieldErrors.zip && (
+                    <ErrorMessage>{fieldErrors.zip}</ErrorMessage>
+                  )}
                 </FormGroup>
-
                 <FormGroup>
                   <label>Country</label>
                   <input
                     name="country"
                     value={addressInfo.country || ""}
                     onChange={handleAddressChange}
-                    required
                   />
+                  {fieldErrors.country && (
+                    <ErrorMessage>{fieldErrors.country}</ErrorMessage>
+                  )}
                 </FormGroup>
               </SectionContent>
             </SectionContainer>
@@ -505,18 +550,20 @@ const Checkout = () => {
               </SectionHeader>
 
               <SectionContent isOpen={shippingOpen}>
-                {dummyShippingMethods?.map((method) => (
+                {dummyShippingMethods.map((method) => (
                   <RadioOption key={method.id}>
                     <input
                       type="radio"
                       name="shippingMethod"
-                      value={method.id}
                       checked={selectedShippingMethod.id === method.id}
                       onChange={() => handleShippingMethodChange(method)}
                     />
-                    {method.name} - ${method.cost} ({method.estimate})
+                    {method.name} – ${method.cost} ({method.estimate})
                   </RadioOption>
                 ))}
+                {fieldErrors.shippingMethodId && (
+                  <ErrorMessage>{fieldErrors.shippingMethodId}</ErrorMessage>
+                )}
               </SectionContent>
             </SectionContainer>
 
@@ -526,15 +573,20 @@ const Checkout = () => {
               <FormGroup>
                 <label>Name on Card</label>
                 <input
-                  type="text"
                   name="cardHolderName"
                   value={cardHolderName}
-                  onChange={(e) => setCardHolderName(e.target.value)}
+                  onChange={(e) => {
+                    setCardHolderName(e.target.value);
+                    if (fieldErrors.cardHolderName) {
+                      setFieldErrors((f) => ({ ...f, cardHolderName: null }));
+                    }
+                  }}
                   placeholder="Exact name on your card"
-                  required
                 />
+                {fieldErrors.cardHolderName && (
+                  <ErrorMessage>{fieldErrors.cardHolderName}</ErrorMessage>
+                )}
               </FormGroup>
-
               <StyledCardElementContainer>
                 <CardElement />
               </StyledCardElementContainer>
