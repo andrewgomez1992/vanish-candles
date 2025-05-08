@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import axios from "axios";
-import candleImage1 from "../../assets/candleBackground2.webp";
+import candleImage1 from "../../assets/candlebackground2.webp";
 import TrackOrderButton from "./TrackOrderButton";
 import RefundButton from "./Refund";
 
