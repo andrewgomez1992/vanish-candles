@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
 
+// add click out to close form or switch form to modal
+
 const ProductFormWrapper = styled.div`
   background-color: #fff;
   padding: 5px 20px 20px 20px;
