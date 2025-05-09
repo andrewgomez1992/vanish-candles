@@ -1,6 +1,8 @@
 import { useState } from "react";
 import styled from "styled-components";
 
+// currently not used - possibly also need notification icon in nav
+
 const NotificationPanelWrapper = styled.div`
   background-color: white;
   padding: 20px;
