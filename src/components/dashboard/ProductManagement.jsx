@@ -85,6 +85,7 @@ const ActionButton = styled.button`
 `;
 
 const ProductManagement = ({ showForm, setShowForm }) => {
+  // pull in real products
   const [products, setProducts] = useState([
     {
       id: "1",
