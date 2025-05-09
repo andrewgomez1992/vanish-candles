@@ -316,7 +316,7 @@ const Checkout = () => {
 
     const chosenAddress = addresses.find((addr) => addr.id === chosenId);
     if (chosenAddress) {
-      setAddressInfo(chosenAddress); // Update addressInfo state to fill the form
+      setAddressInfo(chosenAddress);
     }
   };
 
