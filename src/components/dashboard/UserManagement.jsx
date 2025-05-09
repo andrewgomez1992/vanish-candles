@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { FaUserShield, FaBan, FaTrashAlt } from "react-icons/fa"; // Using icons for actions
-import Tooltip from "../common/Tooltip"; // Reusable Tooltip component
+import { FaUserShield, FaBan, FaTrashAlt } from "react-icons/fa";
+import Tooltip from "../common/Tooltip";
 
 const UserManagementWrapper = styled.div`
   padding: 20px;
