@@ -69,7 +69,6 @@ const TestimonialCard = styled(motion.div)`
   }
 `;
 
-// Arrow buttons
 const ArrowButton = styled.button`
   position: absolute;
   top: 50%;
@@ -89,12 +88,10 @@ const ArrowButton = styled.button`
   }
 `;
 
-// Left arrow
 const ArrowLeft = styled(ArrowButton)`
   left: -30px;
 `;
 
-// Right arrow
 const ArrowRight = styled(ArrowButton)`
   right: -30px;
 `;
