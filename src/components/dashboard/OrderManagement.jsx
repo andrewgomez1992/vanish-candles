@@ -130,7 +130,7 @@ const OrderManagement = () => {
     // Close the dropdown if clicked outside
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setOpenDropdown(null); // Close dropdown
+        setOpenDropdown(null);
       }
     };
 
