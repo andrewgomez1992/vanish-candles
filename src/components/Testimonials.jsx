@@ -25,7 +25,6 @@ const testimonials = [
   },
 ];
 
-// Container for the entire testimonial section
 const TestimonialSection = styled.section`
   background-color: #000;
   padding: 4rem 2rem;
