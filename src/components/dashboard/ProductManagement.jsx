@@ -5,8 +5,6 @@ import candleImage from "../../assets/candlebackground2.webp";
 import Tooltip from "../common/Tooltip";
 import ProductForm from "./ProductForm";
 
-// Do this component first in dashboard
-
 const ProductManagementWrapper = styled.div`
   padding: 20px;
   background-color: white;
