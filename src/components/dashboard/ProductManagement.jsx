@@ -139,7 +139,7 @@ const ProductManagement = ({ showForm, setShowForm }) => {
       setProducts((prevState) =>
         prevState.filter((product) => product.id !== id)
       );
-      console.log("Product deleted:", id); // This will be your delete logic
+      console.log("Product deleted:", id); // This will be delete logic
     }
   };
 
