@@ -14,7 +14,7 @@ import Cart from "./components/Cart";
 import Checkout from "./pages/Checkout";
 import Contact from "./pages/Contact";
 import { CartProvider } from "./context/CartProvider";
-import ProtectedRoute from "./routes/ProtecedRoute";
+import ProtectedRoute from "./routes/ProtectedRoute";
 import VerifyEmail from "./pages/VerifyEmail";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import ScrollToTop from "./util/scrollToTop";
