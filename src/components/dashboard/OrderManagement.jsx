@@ -89,7 +89,7 @@ const DropdownContent = styled.div`
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openDropdown, setOpenDropdown] = useState(null); // To track which dropdown is open
+  const [openDropdown, setOpenDropdown] = useState(null);
 
   // Create a ref to track clicks outside the dropdown
   const dropdownRef = useRef();
