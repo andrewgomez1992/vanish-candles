@@ -48,7 +48,6 @@ const CarouselWrapper = styled.div`
   margin: 0 auto;
 `;
 
-// The text container for each testimonial
 const TestimonialCard = styled(motion.div)`
   font-size: 1.1rem;
   line-height: 1.6;
