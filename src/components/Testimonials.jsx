@@ -31,7 +31,6 @@ const TestimonialSection = styled.section`
   text-align: center;
 `;
 
-// Heading style
 const Title = styled.h2`
   // font-family: "Pacifico", cursive !important;
   font-size: 2rem;
