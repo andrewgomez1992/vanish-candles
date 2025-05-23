@@ -83,7 +83,6 @@ const ActionButton = styled.button`
   }
 `;
 
-// Mock user data, replace with actual data next
 const mockUsers = [
   { id: "1", name: "Alice", email: "alice@example.com", role: "User" },
   { id: "2", name: "Bob", email: "bob@example.com", role: "Admin" },
