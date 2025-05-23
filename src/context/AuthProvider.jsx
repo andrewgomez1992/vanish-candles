@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(false);
     setIsAdmin(false);
     setUserEmail(null);
-    setFirstName(null); // Clear first name on logout
+    setFirstName(null);
   };
 
   console.log("firstName", firstName);
