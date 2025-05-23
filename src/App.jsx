@@ -28,7 +28,7 @@ const App = () => {
       <Router>
         <ScrollToTop />
         <Navbar />
-        {/* ✅ Wrap Routes with Elements to make Stripe available */}
+        {/* Wrap Routes with Elements to make Stripe available */}
         <Elements stripe={stripePromise}>
           <Routes>
             <Route path="/" element={<Landing />} />
