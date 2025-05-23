@@ -103,7 +103,6 @@ const UserManagement = () => {
     // API call can be made to update role in the backend here.
   };
 
-  // Function to handle deactivating a user
   const handleDeactivateUser = (userId) => {
     setUsers((prevUsers) =>
       prevUsers.map((user) =>
