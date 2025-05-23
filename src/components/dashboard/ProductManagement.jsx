@@ -128,7 +128,7 @@ const ProductManagement = ({ showForm, setShowForm }) => {
   ]);
 
   const handleEditProduct = (id) => {
-    console.log("Edit product with id:", id); // This will be your edit logic
+    console.log("Edit product with id:", id);
   };
 
   const handleDeleteProduct = (id) => {
