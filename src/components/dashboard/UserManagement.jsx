@@ -112,7 +112,6 @@ const UserManagement = () => {
     // API call can be made to deactivate the user in the backend here.
   };
 
-  // Function to handle deleting a user
   const handleDeleteUser = (userId) => {
     setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
     // API call can be made to delete the user in the backend here.
