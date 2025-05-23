@@ -76,7 +76,6 @@ const NotificationPanel = () => {
     },
   ]);
 
-  // Mark notification as read
   const markAsRead = (id) => {
     setNotifications((prevNotifications) =>
       prevNotifications.map((notif) =>
