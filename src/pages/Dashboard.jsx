@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useAuth } from "../hooks/useAuth"; // Import useAuth
+import { useAuth } from "../hooks/useAuth";
 
 import ProductManagement from "../components/dashboard/ProductManagement";
 import OrderManagement from "../components/dashboard/OrderManagement";
