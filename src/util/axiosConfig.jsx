@@ -18,7 +18,6 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 🚨 On any 401 response: clear auth + redirect to login
 axiosInstance.interceptors.response.use(
   (res) => res,
   (error) => {
