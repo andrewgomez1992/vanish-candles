@@ -6,7 +6,6 @@ const ResendVerification = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // update
 
   const handleResend = async () => {
     if (!email) return;
