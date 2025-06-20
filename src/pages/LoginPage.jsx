@@ -171,6 +171,7 @@ const LoginPage = () => {
     }
   };
 
+  // update backend route to just send 200 and accept fake user
   const handleResendVerification = async () => {
     setResendMessage("");
     setError("");
