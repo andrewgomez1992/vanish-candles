@@ -5,6 +5,8 @@ import Navbar from "../components/Navbar";
 import { useAuth } from "../hooks/useAuth";
 import axiosInstance from "../util/axiosConfig";
 
+// create fake login so people that check out project can log in
+
 const LoginPageContainer = styled.div`
   display: flex;
   flex-direction: column;
